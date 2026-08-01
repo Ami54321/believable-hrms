@@ -24,21 +24,19 @@
 
         <hr>
 
-        <input
-            type="text"
-            class="form-control mb-3"
-            placeholder="Employee ID"
-        >
+        <div class="mb-3">
+    <label class="form-label">Employee ID</label>
+    <input type="text" id="employeeId" class="form-control">
+</div>
 
-        <input
-            type="password"
-            class="form-control mb-3"
-            placeholder="Password"
-        >
+<div class="mb-3">
+    <label class="form-label">Password</label>
+    <input type="password" id="password" class="form-control">
+</div>
 
-        <button class="btn btn-primary w-100">
-            Login
-        </button>
+<button class="btn btn-primary w-100" onclick="login()">
+    Login
+</button>
 
     </div>
 
