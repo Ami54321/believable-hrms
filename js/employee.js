@@ -1,3 +1,4 @@
+alert("employee.js loaded");
 function addEmployee() {
 
     let empid = document.getElementById("empid").value;
