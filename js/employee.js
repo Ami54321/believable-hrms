@@ -20,6 +20,9 @@ table.innerHTML += `
     <td>${empid}</td>
     <td>${fullname}</td>
     <td>${status}</td>
+    <td>
+        <button onclick="deleteEmployee(this)">Delete</button>
+    </td>
 </tr>
 `;
 
@@ -27,4 +30,13 @@ table.innerHTML += `
     document.getElementById("fullname").value="";
     document.getElementById("password").value="";
     document.getElementById("status").value="Active";
+}
+function deleteEmployee(button){
+
+    if(confirm("Are you sure you want to delete this employee?")){
+
+        button.parentElement.parentElement.remove();
+
+    }
+
 }
