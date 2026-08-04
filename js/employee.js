@@ -11,7 +11,11 @@ function addEmployee() {
 
     let table = document.getElementById("employeeTable");
 
-    table.innerHTML = `
+    if(table.innerHTML.includes("No Employees Added Yet")){
+    table.innerHTML = "";
+}
+
+table.innerHTML += `
 <tr>
     <td>${empid}</td>
     <td>${fullname}</td>
