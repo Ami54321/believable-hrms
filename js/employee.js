@@ -23,8 +23,9 @@ function addEmployee() {
         <td>${fullname}</td>
         <td>${status}</td>
         <td>
-            <button onclick="deleteEmployee(this)">Delete</button>
-        </td>
+    <button onclick="editEmployee(this)">Edit</button>
+    <button onclick="deleteEmployee(this)">Delete</button>
+</td>
     </tr>
     `;
 
@@ -58,4 +59,28 @@ function searchEmployee() {
 
     });
 
+}
+function editEmployee(button){
+
+    let row = button.closest("tr");
+
+    let nameCell = row.cells[1];
+    let statusCell = row.cells[2];
+
+    let newName = prompt("Enter new employee name:", nameCell.innerText);
+
+    if(newName == null || newName.trim() == ""){
+        return;
+    }
+
+    let newStatus = prompt("Enter Status (Active/Inactive):", statusCell.innerText);
+
+    if(newStatus == null || newStatus.trim() == ""){
+        return;
+    }
+
+    nameCell.innerText = newName;
+    statusCell.innerText = newStatus;
+
+    alert("Employee updated successfully!");
 }
