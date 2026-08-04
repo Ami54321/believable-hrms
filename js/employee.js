@@ -41,3 +41,21 @@ function deleteEmployee(button) {
         button.closest("tr").remove();
     }
 }
+function searchEmployee() {
+
+    let input = document.getElementById("searchBox").value.toLowerCase();
+
+    let rows = document.querySelectorAll("#employeeTable tr");
+
+    rows.forEach(function(row){
+
+        if(row.innerText.toLowerCase().includes(input)){
+            row.style.display = "";
+        }
+        else{
+            row.style.display = "none";
+        }
+
+    });
+
+}
