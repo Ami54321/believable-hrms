@@ -103,3 +103,36 @@ function editEmployee(button){
 
     alert("Employee updated successfully!");
 }
+async function loadEmployees() {
+
+    const { data, error } = await supabaseClient
+        .from("employees")
+        .select("*");
+
+    if (error) {
+        alert(error.message);
+        return;
+    }
+
+    let table = document.getElementById("employeeTable");
+
+    table.innerHTML = "";
+
+    data.forEach(emp => {
+
+        table.innerHTML += `
+        <tr>
+            <td>${emp.employee_id}</td>
+            <td>${emp.full_name}</td>
+            <td>${emp.status}</td>
+            <td>
+                <button onclick="editEmployee(this)">Edit</button>
+                <button onclick="deleteEmployee(this)">Delete</button>
+            </td>
+        </tr>
+        `;
+
+    });
+
+}
+loadEmployees();
