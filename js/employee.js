@@ -1,8 +1,9 @@
 console.log(supabaseClient);
-function addEmployee() {
+async function addEmployee() {
 
     let empid = document.getElementById("empid").value;
     let fullname = document.getElementById("fullname").value;
+    let password = document.getElementById("password").value;
     let status = document.getElementById("status").value;
 
     if (empid === "" || fullname === "") {
@@ -28,12 +29,31 @@ function addEmployee() {
     </tr>
     `;
 
-    table.innerHTML += row;
+ table.innerHTML += row;
 
-    document.getElementById("empid").value = "";
-    document.getElementById("fullname").value = "";
-    document.getElementById("password").value = "";
-    document.getElementById("status").value = "Active";
+const { error } = await supabaseClient
+    .from("employees")
+    .insert([
+        {
+            employee_id: empid,
+            full_name: fullname,
+            password: password,
+            leave_balance: 12,
+            status: status,
+            role: "Employee"
+        }
+    ]);
+
+if (error) {
+    alert(error.message);
+} else {
+    alert("Employee saved to Supabase successfully!");
+}
+
+document.getElementById("empid").value = "";
+document.getElementById("fullname").value = "";
+document.getElementById("password").value = "";
+document.getElementById("status").value = "Active";
 }
 
 function deleteEmployee(button) {
