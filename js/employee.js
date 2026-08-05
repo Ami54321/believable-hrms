@@ -1,3 +1,4 @@
+console.log(supabaseClient);
 function addEmployee() {
 
     let empid = document.getElementById("empid").value;
