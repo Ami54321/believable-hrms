@@ -117,21 +117,41 @@ function editEmployee(button) {
 
     let row = button.closest("tr");
 
+    let employeeId = row.cells[0].innerText;
     let nameCell = row.cells[1];
     let statusCell = row.cells[2];
 
-    let newName = prompt("Enter new employee name:", nameCell.innerText);
+    let newName = prompt(
+        "Enter new employee name:",
+        nameCell.innerText
+    );
 
-    if (newName == null || newName.trim() == "") return;
+    if (newName == null || newName.trim() == "") {
+        return;
+    }
 
-    let newStatus = prompt("Enter Status (Active/Inactive):", statusCell.innerText);
+    let newPassword = prompt(
+        "Enter new password:",
+        ""
+    );
 
-    if (newStatus == null || newStatus.trim() == "") return;
+    if (newPassword == null || newPassword.trim() == "") {
+        return;
+    }
+
+    let newStatus = prompt(
+        "Enter Status (Active/Inactive):",
+        statusCell.innerText
+    );
+
+    if (newStatus == null || newStatus.trim() == "") {
+        return;
+    }
 
     nameCell.innerText = newName;
     statusCell.innerText = newStatus;
 
-    alert("Employee updated successfully!");
+    alert("Employee details updated!");
 }
 
 // ==========================
