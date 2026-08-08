@@ -1,8 +1,6 @@
 console.log(supabaseClient);
 
-// ==========================
 // Add Employee
-// ==========================
 async function addEmployee() {
 
     let empid = document.getElementById("empid").value;
@@ -43,9 +41,8 @@ async function addEmployee() {
     loadEmployees();
 }
 
-// ==========================
+
 // Load Employees
-// ==========================
 async function loadEmployees() {
 
     const { data, error } = await supabaseClient
@@ -59,6 +56,7 @@ async function loadEmployees() {
     }
 
     let table = document.getElementById("employeeTable");
+
     table.innerHTML = "";
 
     data.forEach(emp => {
@@ -78,20 +76,35 @@ async function loadEmployees() {
     });
 }
 
-// ==========================
-// Delete Row (Temporary)
-// ==========================
-function deleteEmployee(button) {
 
-    if (confirm("Are you sure?")) {
-        button.closest("tr").remove();
+// Delete Employee
+async function deleteEmployee(button) {
+
+    let row = button.closest("tr");
+
+    let employeeId = row.cells[0].innerText;
+
+    if (!confirm("Are you sure you want to delete this employee?")) {
+        return;
     }
 
+    const { error } = await supabaseClient
+        .from("employees")
+        .delete()
+        .eq("employee_id", employeeId);
+
+    if (error) {
+        alert("Error deleting employee: " + error.message);
+        return;
+    }
+
+    alert("Employee deleted successfully!");
+
+    loadEmployees();
 }
 
-// ==========================
-// Search
-// ==========================
+
+// Search Employee
 function searchEmployee() {
 
     let input = document.getElementById("searchBox").value.toLowerCase();
@@ -107,26 +120,22 @@ function searchEmployee() {
         }
 
     });
-
 }
 
-// ==========================
-// Edit (Temporary)
-// ==========================
-function editEmployee(button) {
+
+// Edit Employee
+async function editEmployee(button) {
 
     let row = button.closest("tr");
 
     let employeeId = row.cells[0].innerText;
-    let nameCell = row.cells[1];
-    let statusCell = row.cells[2];
 
     let newName = prompt(
         "Enter new employee name:",
-        nameCell.innerText
+        row.cells[1].innerText
     );
 
-    if (newName == null || newName.trim() == "") {
+    if (newName == null || newName.trim() === "") {
         return;
     }
 
@@ -135,26 +144,38 @@ function editEmployee(button) {
         ""
     );
 
-    if (newPassword == null || newPassword.trim() == "") {
+    if (newPassword == null || newPassword.trim() === "") {
         return;
     }
 
     let newStatus = prompt(
         "Enter Status (Active/Inactive):",
-        statusCell.innerText
+        row.cells[2].innerText
     );
 
-    if (newStatus == null || newStatus.trim() == "") {
+    if (newStatus == null || newStatus.trim() === "") {
         return;
     }
 
-    nameCell.innerText = newName;
-    statusCell.innerText = newStatus;
+    const { error } = await supabaseClient
+        .from("employees")
+        .update({
+            full_name: newName,
+            password: newPassword,
+            status: newStatus
+        })
+        .eq("employee_id", employeeId);
 
-    alert("Employee details updated!");
+    if (error) {
+        alert("Error updating employee: " + error.message);
+        return;
+    }
+
+    alert("Employee updated successfully!");
+
+    loadEmployees();
 }
 
-// ==========================
-// Load Employees Automatically
-// ==========================
+
+// Load Employees When Page Opens
 loadEmployees();
