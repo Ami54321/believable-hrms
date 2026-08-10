@@ -64,8 +64,9 @@ async function loadEmployees() {
         table.innerHTML += `
         <tr>
             <td>${emp.employee_id}</td>
-            <td>${emp.full_name}</td>
-            <td>${emp.status}</td>
+<td>${emp.full_name}</td>
+<td>${emp.password}</td>
+<td>${emp.status}</td>
             <td>
                 <button onclick="editEmployee(this)">Edit</button>
                 <button onclick="deleteEmployee(this)">Delete</button>
