@@ -18,31 +18,53 @@ async function checkIn() {
         "-" +
         String(nowDate.getDate()).padStart(2, "0");
 
+    let hours = nowDate.getHours();
+    let minutes = nowDate.getMinutes();
+
     let now =
         today + " " +
-        String(nowDate.getHours()).padStart(2, "0") + ":" +
-        String(nowDate.getMinutes()).padStart(2, "0") + ":" +
+        String(hours).padStart(2, "0") + ":" +
+        String(minutes).padStart(2, "0") + ":" +
         String(nowDate.getSeconds()).padStart(2, "0");
 
+
+    // Decide On Time or Late
+    let attendanceStatus;
+
+    if (hours < 10 || (hours === 10 && minutes <= 15)) {
+        attendanceStatus = "On Time";
+    } else {
+        attendanceStatus = "Late";
+    }
+
+
+    // Save attendance
     const { error } = await supabaseClient
         .from("attendance")
         .insert([
             {
                 employee_id: employeeId,
                 attendance_date: today,
-                check_in: now
+                check_in: now,
+                attendance_status: attendanceStatus
             }
         ]);
+
 
     if (error) {
         alert("Error: " + error.message);
         return;
     }
 
-    document.getElementById("message").innerText =
-        "Check In successful!";
 
-    alert("Attendance marked successfully!");
+    document.getElementById("message").innerText =
+        "Check In successful! Status: " + attendanceStatus;
+
+
+    alert(
+        "Attendance marked successfully!\n\n" +
+        "Status: " + attendanceStatus
+    );
 }
 
 
