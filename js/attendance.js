@@ -64,11 +64,38 @@ async function checkOut() {
         String(nowDate.getMinutes()).padStart(2, "0") + ":" +
         String(nowDate.getSeconds()).padStart(2, "0");
 
-    const { error } = await supabaseClient
-        .from("attendance")
-        .update({
-            check_out: now
-        })
+    const { data: attendance, error: fetchError } = await supabaseClient
+    .from("attendance")
+    .select("check_in")
+    .eq("employee_id", employeeId)
+    .eq("attendance_date", today)
+    .single();
+
+if (fetchError) {
+    alert("Error finding check-in: " + fetchError.message);
+    return;
+}
+
+let checkInTime = new Date(attendance.check_in);
+let checkOutTime = new Date();
+
+let difference = checkOutTime - checkInTime;
+
+let totalMinutes = Math.floor(difference / 60000);
+
+let hours = Math.floor(totalMinutes / 60);
+let minutes = totalMinutes % 60;
+
+let workingHours = hours + " hours " + minutes + " minutes";
+
+const { error } = await supabaseClient
+    .from("attendance")
+    .update({
+        check_out: now,
+        working_hours: workingHours
+    })
+    .eq("employee_id", employeeId)
+    .eq("attendance_date", today);
         .eq("employee_id", employeeId)
         .eq("attendance_date", today);
 
