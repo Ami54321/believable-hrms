@@ -7,9 +7,18 @@ async function checkIn() {
         return;
     }
 
-    let today = new Date().toISOString().split("T")[0];
+    let nowDate = new Date();
 
-    let now = new Date().toISOString();
+let today =
+    nowDate.getFullYear() + "-" +
+    String(nowDate.getMonth() + 1).padStart(2, "0") + "-" +
+    String(nowDate.getDate()).padStart(2, "0");
+
+let now =
+    today + " " +
+    String(nowDate.getHours()).padStart(2, "0") + ":" +
+    String(nowDate.getMinutes()).padStart(2, "0") + ":" +
+    String(nowDate.getSeconds()).padStart(2, "0");
 
     const { error } = await supabaseClient
         .from("attendance")
