@@ -1,3 +1,6 @@
+// ==========================
+// CHECK IN
+// ==========================
 async function checkIn() {
 
     let employeeId = document.getElementById("employeeId").value.trim();
@@ -9,16 +12,17 @@ async function checkIn() {
 
     let nowDate = new Date();
 
-let today =
-    nowDate.getFullYear() + "-" +
-    String(nowDate.getMonth() + 1).padStart(2, "0") + "-" +
-    String(nowDate.getDate()).padStart(2, "0");
+    let today =
+        nowDate.getFullYear() + "-" +
+        String(nowDate.getMonth() + 1).padStart(2, "0") +
+        "-" +
+        String(nowDate.getDate()).padStart(2, "0");
 
-let now =
-    today + " " +
-    String(nowDate.getHours()).padStart(2, "0") + ":" +
-    String(nowDate.getMinutes()).padStart(2, "0") + ":" +
-    String(nowDate.getSeconds()).padStart(2, "0");
+    let now =
+        today + " " +
+        String(nowDate.getHours()).padStart(2, "0") + ":" +
+        String(nowDate.getMinutes()).padStart(2, "0") + ":" +
+        String(nowDate.getSeconds()).padStart(2, "0");
 
     const { error } = await supabaseClient
         .from("attendance")
@@ -41,6 +45,10 @@ let now =
     alert("Attendance marked successfully!");
 }
 
+
+// ==========================
+// CHECK OUT
+// ==========================
 async function checkOut() {
 
     let employeeId = document.getElementById("employeeId").value.trim();
@@ -64,48 +72,61 @@ async function checkOut() {
         String(nowDate.getMinutes()).padStart(2, "0") + ":" +
         String(nowDate.getSeconds()).padStart(2, "0");
 
+
+    // Find today's attendance
     const { data: attendance, error: fetchError } = await supabaseClient
-    .from("attendance")
-    .select("check_in")
-    .eq("employee_id", employeeId)
-    .eq("attendance_date", today)
-    .single();
+        .from("attendance")
+        .select("check_in")
+        .eq("employee_id", employeeId)
+        .eq("attendance_date", today)
+        .single();
 
-if (fetchError) {
-    alert("Error finding check-in: " + fetchError.message);
-    return;
-}
 
-let checkInTime = new Date(attendance.check_in);
-let checkOutTime = new Date();
+    if (fetchError) {
+        alert("Error finding check-in: " + fetchError.message);
+        return;
+    }
 
-let difference = checkOutTime - checkInTime;
 
-let totalMinutes = Math.floor(difference / 60000);
+    // Calculate working hours
+    let checkInTime = new Date(attendance.check_in);
 
-let hours = Math.floor(totalMinutes / 60);
-let minutes = totalMinutes % 60;
+    let checkOutTime = new Date();
 
-let workingHours = hours + " hours " + minutes + " minutes";
+    let difference = checkOutTime - checkInTime;
 
-const { error } = await supabaseClient
-    .from("attendance")
-    .update({
-        check_out: now,
-        working_hours: workingHours
-    })
-    .eq("employee_id", employeeId)
-    .eq("attendance_date", today);
+    let totalMinutes = Math.floor(difference / 60000);
+
+    let hours = Math.floor(totalMinutes / 60);
+
+    let minutes = totalMinutes % 60;
+
+    let workingHours =
+        hours + " hours " + minutes + " minutes";
+
+
+    // Save checkout and working hours
+    const { error } = await supabaseClient
+        .from("attendance")
+        .update({
+            check_out: now,
+            working_hours: workingHours
+        })
         .eq("employee_id", employeeId)
         .eq("attendance_date", today);
+
 
     if (error) {
         alert("Error: " + error.message);
         return;
     }
 
+
     document.getElementById("message").innerText =
         "Check Out successful!";
 
-    alert("Check Out marked successfully!");
+    alert(
+        "Check Out marked successfully!\n\n" +
+        "Working Hours: " + workingHours
+    );
 }
