@@ -152,3 +152,137 @@ async function checkOut() {
         "Working Hours: " + workingHours
     );
 }
+
+async function applyLateRegularization() {
+
+    let employeeId =
+        document.getElementById("regularizationEmployeeId").value.trim();
+
+    let attendanceDate =
+        document.getElementById("regularizationDate").value;
+
+    let reason =
+        document.getElementById("regularizationReason").value.trim();
+
+
+    if (employeeId === "" || attendanceDate === "" || reason === "") {
+
+        alert("Please fill all fields");
+
+        return;
+    }
+
+
+    // Check whether this attendance was actually Late
+    const { data: attendance, error: attendanceError } =
+        await supabaseClient
+            .from("attendance")
+            .select("attendance_status")
+            .eq("employee_id", employeeId)
+            .eq("attendance_date", attendanceDate)
+            .single();
+
+
+    if (attendanceError) {
+
+        alert("Attendance record not found for this date.");
+
+        return;
+    }
+
+
+    if (attendance.attendance_status !== "Late") {
+
+        alert("Regularization is only available for Late attendance.");
+
+        return;
+    }
+
+
+    // Find first and last date of current month
+    let now = new Date();
+
+    let firstDay =
+        now.getFullYear() + "-" +
+        String(now.getMonth() + 1).padStart(2, "0") +
+        "-01";
+
+    let nextMonth = new Date(
+        now.getFullYear(),
+        now.getMonth() + 1,
+        1
+    );
+
+    let nextMonthFirstDay =
+        nextMonth.getFullYear() + "-" +
+        String(nextMonth.getMonth() + 1).padStart(2, "0") +
+        "-01";
+
+
+    // Count regularization requests this month
+    const { count, error: countError } =
+        await supabaseClient
+            .from("late_regularizations")
+            .select("*", {
+                count: "exact",
+                head: true
+            })
+            .eq("employee_id", employeeId)
+            .gte("attendance_date", firstDay)
+            .lt("attendance_date", nextMonthFirstDay);
+
+
+    if (countError) {
+
+        alert("Error checking regularization limit: " + countError.message);
+
+        return;
+    }
+
+
+    // Maximum 6 regularizations per month
+    if (count >= 6) {
+
+        alert(
+            "You have already used 6 late regularizations this month."
+        );
+
+        return;
+    }
+
+
+    // Save request
+    const { error } = await supabaseClient
+        .from("late_regularizations")
+        .insert([
+            {
+                employee_id: employeeId,
+                attendance_date: attendanceDate,
+                reason: reason,
+                status: "Pending"
+            }
+        ]);
+
+
+    if (error) {
+
+        alert("Error submitting request: " + error.message);
+
+        return;
+    }
+
+
+    document.getElementById("regularizationMessage").innerText =
+        "Late regularization request submitted successfully!";
+
+
+    alert(
+        "Regularization request submitted!\n\nStatus: Pending"
+    );
+
+
+    // Clear form
+    document.getElementById("regularizationEmployeeId").value = "";
+    document.getElementById("regularizationDate").value = "";
+    document.getElementById("regularizationReason").value = "";
+}

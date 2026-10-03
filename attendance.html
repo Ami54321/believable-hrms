@@ -82,6 +82,46 @@ button:hover{
 
 <p id="message"></p>
 
+<hr>
+
+<h3>Late Regularization</h3>
+
+<p>Employee ID</p>
+
+<input
+    type="text"
+    id="regularizationEmployeeId"
+    placeholder="Employee ID"
+>
+
+<br><br>
+
+<p>Late Attendance Date</p>
+
+<input
+    type="date"
+    id="regularizationDate"
+>
+
+<br><br>
+
+<p>Reason</p>
+
+<textarea
+    id="regularizationReason"
+    placeholder="Enter reason for late attendance"
+    rows="4"
+    style="width:100%; box-sizing:border-box; padding:10px;"
+></textarea>
+
+<br><br>
+
+<button onclick="applyLateRegularization()">
+    Apply Regularization
+</button>
+
+<p id="regularizationMessage"></p>
+
 </div>
 
 </div>
