@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html>
+
 <head>
+
 <meta charset="UTF-8">
+
 <title>Believable HRMS</title>
 
 <style>
@@ -9,6 +12,7 @@
 body{
     margin:0;
     font-family:Arial;
+    background:#f5f5f5;
 }
 
 .sidebar{
@@ -40,9 +44,45 @@ body{
 }
 
 .card{
-    background:#f5f5f5;
+    background:white;
     padding:20px;
     border-radius:10px;
+    box-shadow:0 0 10px rgba(0,0,0,.1);
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
+}
+
+th, td{
+    border:1px solid #ddd;
+    padding:10px;
+    text-align:left;
+}
+
+th{
+    background:#0d6efd;
+    color:white;
+}
+
+.approve{
+    background:#198754;
+    color:white;
+    border:none;
+    padding:8px 12px;
+    cursor:pointer;
+    border-radius:4px;
+}
+
+.reject{
+    background:#dc3545;
+    color:white;
+    border:none;
+    padding:8px 12px;
+    cursor:pointer;
+    border-radius:4px;
 }
 
 </style>
@@ -55,19 +95,28 @@ body{
 
 <h2>Believable HRMS</h2>
 
-<button>🏠 Dashboard</button>
+<button>
+🏠 Dashboard
+</button>
 
 <button onclick="window.location.href='employee.html'">
 👥 Employees
 </button>
 
-<button>📅 Attendance</button>
+<button onclick="window.location.href='attendance.html'">
+📅 Attendance
+</button>
 
-<button>🌴 Leave</button>
+<button>
+🌴 Leave
+</button>
 
-<button>Logout</button>
+<button>
+Logout
+</button>
 
 </div>
+
 
 <div class="main">
 
@@ -79,9 +128,45 @@ body{
 
 <p>HRMS Dashboard is ready.</p>
 
+<hr>
+
+<h2>Late Regularization Requests</h2>
+
+<table>
+
+<thead>
+
+<tr>
+<th>Employee ID</th>
+<th>Date</th>
+<th>Reason</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+
+</thead>
+
+<tbody id="regularizationTable">
+
+<tr>
+<td colspan="5">Loading...</td>
+</tr>
+
+</tbody>
+
+</table>
+
 </div>
 
 </div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="js/supabase.js"></script>
+
+<script src="js/admin.js"></script>
 
 </body>
+
 </html>
