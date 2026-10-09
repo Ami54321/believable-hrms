@@ -158,5 +158,37 @@ No Employees Added Yet
 <script src="js/supabase.js"></script>
 <script src="js/employee.js"></script>
 
+    
+<hr>
+
+<h2>Apply for Leave</h2>
+
+<div>
+    <label>Employee ID:</label><br>
+    <input type="text" id="leaveEmployeeId" placeholder="Enter Employee ID">
+    <br><br>
+
+    <label>Leave Type:</label><br>
+    <select id="leaveType">
+        <option value="Casual Leave">Casual Leave</option>
+    </select>
+    <br><br>
+
+    <label>Start Date:</label><br>
+    <input type="date" id="leaveStartDate">
+    <br><br>
+
+    <label>End Date:</label><br>
+    <input type="date" id="leaveEndDate">
+    <br><br>
+
+    <label>Reason:</label><br>
+    <textarea id="leaveReason" placeholder="Enter reason for leave"></textarea>
+    <br><br>
+
+    <button onclick="applyLeave()">Submit Leave Application</button>
+
+    <p id="leaveMessage"></p>
+</div>
 </body>
 </html>
