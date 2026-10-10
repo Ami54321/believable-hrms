@@ -118,7 +118,6 @@ async function rejectRequest(id) {
 // ==========================
 loadRegularizations();
 
-
  // ==========================
  // Load Employee Leave Requests
  // ==========================
