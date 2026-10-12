@@ -1,9 +1,18 @@
+
 console.log("Admin JS loaded");
 
-// ==========================
-// Load Regularization Requests
-// ==========================
+// =====================================
+// LOAD LATE REGULARIZATION REQUESTS
+// =====================================
 async function loadRegularizations() {
+    const table = document.getElementById("regularizationTable");
+
+    if (!table) {
+        console.warn("Regularization table not found.");
+        return;
+    }
+
+    table.innerHTML = "<tr><td colspan='5'>Loading...</td></tr>";
 
     const { data, error } = await supabaseClient
         .from("late_regularizations")
@@ -11,164 +20,29 @@ async function loadRegularizations() {
         .order("id", { ascending: true });
 
     if (error) {
-        alert("Error loading requests: " + error.message);
-        return;
-    }
-
-    let table = document.getElementById("regularizationTable");
-
-    table.innerHTML = "";
-
-    if (data.length === 0) {
-        table.innerHTML = `
-            <tr>
-                <td colspan="5">No regularization requests</td>
-            </tr>
-        `;
-        return;
-    }
-
-    data.forEach(request => {
-
-        table.innerHTML += `
-            <tr>
-                <td>${request.employee_id}</td>
-                <td>${request.attendance_date}</td>
-                <td>${request.reason}</td>
-                <td>${request.status}</td>
-
-                <td>
-
-                    <button
-                        class="approve"
-                        onclick="approveRequest(${request.id})">
-                        Approve
-                    </button>
-
-                    <button
-                        class="reject"
-                        onclick="rejectRequest(${request.id})">
-                        Reject
-                    </button>
-
-                </td>
-            </tr>
-        `;
-
-    });
-}
-
-
-// ==========================
-// Approve Request
-// ==========================
-async function approveRequest(id) {
-
-    if (!confirm("Approve this regularization request?")) {
-        return;
-    }
-
-    const { error } = await supabaseClient
-        .from("late_regularizations")
-        .update({
-            status: "Approved"
-        })
-        .eq("id", id);
-
-    if (error) {
-        alert("Error: " + error.message);
-        return;
-    }
-
-    alert("Regularization approved!");
-
-    loadRegularizations();
-}
-
-
-// ==========================
-// Reject Request
-// ==========================
-async function rejectRequest(id) {
-
-    if (!confirm("Reject this regularization request?")) {
-        return;
-    }
-
-    const { error } = await supabaseClient
-        .from("late_regularizations")
-        .update({
-            status: "Rejected"
-        })
-        .eq("id", id);
-
-    if (error) {
-        alert("Error: " + error.message);
-        return;
-    }
-
-    alert("Regularization rejected!");
-
-    loadRegularizations();
-}
-
-
-// ==========================
-// Load when Admin page opens
-// ==========================
-loadRegularizations();
-
- // ==========================
- // Load Employee Leave Requests
- // ==========================
-async function loadLeaveRequests() {
-    const table = document.getElementById("leaveRequestsTable");
-
-    if (!table) return;
-
-    table.innerHTML = `
-        <tr><td colspan="7">Loading...</td></tr>
-    `;
-
-    
-console.log("Loading leave requests from Supabase...");
-
-const { data, error } = await supabaseClient
-    .from("leaves")
-    .select("*")
-    .order("id", { ascending: false });
-
-console.log("Leave data:", data);
-console.log("Leave error:", error);
-
-
-    if (error) {
-        table.innerHTML = `
-            <tr><td colspan="7">Error loading leave requests</td></tr>
-        `;
-        alert("Error loading leave requests: " + error.message);
+        console.error("Regularization error:", error);
+        table.innerHTML =
+            "<tr><td colspan='5'>Error loading requests</td></tr>";
+        alert("Regularization error: " + error.message);
         return;
     }
 
     if (!data || data.length === 0) {
-        table.innerHTML = `
-            <tr><td colspan="7">No leave requests yet</td></tr>
-        `;
+        table.innerHTML =
+            "<tr><td colspan='5'>No regularization requests</td></tr>";
         return;
     }
 
     table.innerHTML = "";
 
-    data.forEach(leave => {
+    data.forEach(request => {
         const row = document.createElement("tr");
 
         [
-            leave.employee_id,
-            leave.leave_type,
-            leave.start_date,
-            leave.end_date,
-            leave.reason,
-            leave.status
+            request.employee_id,
+            request.attendance_date,
+            request.reason,
+            request.status
         ].forEach(value => {
             const cell = document.createElement("td");
             cell.textContent = value ?? "";
@@ -177,18 +51,20 @@ console.log("Leave error:", error);
 
         const actionCell = document.createElement("td");
 
-        if (leave.status === "Pending") {
-            const approveButton = document.createElement("button");
-            approveButton.textContent = "Approve";
-            approveButton.onclick = () => updateLeaveStatus(leave.id, "Approved");
+        if (request.status === "Pending") {
+            const approve = document.createElement("button");
+            approve.textContent = "Approve";
+            approve.className = "approve";
+            approve.onclick = () => updateRegularization(request.id, "Approved");
 
-            const rejectButton = document.createElement("button");
-            rejectButton.textContent = "Reject";
-            rejectButton.onclick = () => updateLeaveStatus(leave.id, "Rejected");
+            const reject = document.createElement("button");
+            reject.textContent = "Reject";
+            reject.className = "reject";
+            reject.onclick = () => updateRegularization(request.id, "Rejected");
 
-            actionCell.appendChild(approveButton);
+            actionCell.appendChild(approve);
             actionCell.appendChild(document.createTextNode(" "));
-            actionCell.appendChild(rejectButton);
+            actionCell.appendChild(reject);
         } else {
             actionCell.textContent = "No action needed";
         }
@@ -198,22 +74,145 @@ console.log("Leave error:", error);
     });
 }
 
-// ==========================
-// Approve or Reject Leave
-// ==========================
+// =====================================
+// APPROVE OR REJECT REGULARIZATION
+// =====================================
+async function updateRegularization(id, status) {
+    if (!confirm("Are you sure you want to " + status.toLowerCase() + " this request?")) {
+        return;
+    }
+
+    const { data, error } = await supabaseClient
+        .from("late_regularizations")
+        .update({ status: status })
+        .eq("id", id)
+        .eq("status", "Pending")
+        .select();
+
+    if (error) {
+        alert("Error updating regularization: " + error.message);
+        return;
+    }
+
+    if (!data || data.length === 0) {
+        alert("Request was not updated. It may already have been processed, or database permissions may prevent the change.");
+        await loadRegularizations();
+        return;
+    }
+
+    alert("Regularization " + status.toLowerCase() + "!");
+    await loadRegularizations();
+}
+
+// =====================================
+// LOAD EMPLOYEE LEAVE REQUESTS
+// =====================================
+async function loadLeaveRequests() {
+    const table = document.getElementById("leaveRequestsTable");
+
+    if (!table) {
+        console.warn("Leave requests table not found.");
+        return;
+    }
+
+    table.innerHTML =
+        "<tr><td colspan='7'>Loading leave requests...</td></tr>";
+
+    try {
+        console.log("Loading leave requests from Supabase...");
+
+        const { data, error } = await supabaseClient
+            .from("leaves")
+            .select("*")
+            .order("id", { ascending: false });
+
+        console.log("Leave data:", data);
+        console.log("Leave error:", error);
+
+        if (error) {
+            console.error("Leave loading error:", error);
+            table.innerHTML =
+                "<tr><td colspan='7'>Could not load leave requests.</td></tr>";
+            alert("Leave loading error: " + error.message);
+            return;
+        }
+
+        if (!data || data.length === 0) {
+            table.innerHTML =
+                "<tr><td colspan='7'>No leave requests yet.</td></tr>";
+            return;
+        }
+
+        table.innerHTML = "";
+
+        data.forEach(leave => {
+            const row = document.createElement("tr");
+
+            [
+                leave.employee_id,
+                leave.leave_type,
+                leave.start_date,
+                leave.end_date,
+                leave.reason,
+                leave.status
+            ].forEach(value => {
+                const cell = document.createElement("td");
+                cell.textContent = value ?? "";
+                row.appendChild(cell);
+            });
+
+            const actionCell = document.createElement("td");
+
+            if (leave.status === "Pending") {
+                const approve = document.createElement("button");
+                approve.textContent = "Approve";
+                approve.onclick = () => updateLeaveStatus(leave.id, "Approved");
+
+                const reject = document.createElement("button");
+                reject.textContent = "Reject";
+                reject.onclick = () => updateLeaveStatus(leave.id, "Rejected");
+
+                actionCell.appendChild(approve);
+                actionCell.appendChild(document.createTextNode(" "));
+                actionCell.appendChild(reject);
+            } else {
+                actionCell.textContent = "No action needed";
+            }
+
+            row.appendChild(actionCell);
+            table.appendChild(row);
+        });
+    } catch (err) {
+        console.error("Unexpected leave error:", err);
+        table.innerHTML =
+            "<tr><td colspan='7'>Unexpected error loading leave requests.</td></tr>";
+        alert("Unexpected leave error: " + err.message);
+    }
+}
+
+// =====================================
+// APPROVE OR REJECT LEAVE
+// =====================================
 async function updateLeaveStatus(id, status) {
     if (!confirm("Are you sure you want to " + status.toLowerCase() + " this leave request?")) {
         return;
     }
 
-    const { error } = await supabaseClient
+    const { data, error } = await supabaseClient
         .from("leaves")
         .update({ status: status })
         .eq("id", id)
-        .eq("status", "Pending");
+        .eq("status", "Pending")
+        .select();
 
     if (error) {
         alert("Error updating leave: " + error.message);
+        return;
+    }
+
+    if (!data || data.length === 0) {
+        alert("Leave request was not updated. It may already have been processed, or database permissions may prevent the change.");
+        await loadLeaveRequests();
         return;
     }
 
@@ -221,7 +220,9 @@ async function updateLeaveStatus(id, status) {
     await loadLeaveRequests();
 }
 
-// Load leave requests when the Admin page opens
-console.log("Starting leave request loading...");
+// =====================================
+// LOAD TABLES WHEN ADMIN PAGE OPENS
+// =====================================
+loadRegularizations();
 loadLeaveRequests();
-console.log("Leave loading function called.");
+
