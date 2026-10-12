@@ -215,4 +215,6 @@ async function updateLeaveStatus(id, status) {
 }
 
 // Load leave requests when the Admin page opens
+console.log("Starting leave request loading...");
 loadLeaveRequests();
+console.log("Leave loading function called.");
