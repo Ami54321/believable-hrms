@@ -130,10 +130,17 @@ async function loadLeaveRequests() {
         <tr><td colspan="7">Loading...</td></tr>
     `;
 
-    const { data, error } = await supabaseClient
-        .from("leaves")
-        .select("*")
-        .order("id", { ascending: false });
+    
+console.log("Loading leave requests from Supabase...");
+
+const { data, error } = await supabaseClient
+    .from("leaves")
+    .select("*")
+    .order("id", { ascending: false });
+
+console.log("Leave data:", data);
+console.log("Leave error:", error);
+
 
     if (error) {
         table.innerHTML = `
