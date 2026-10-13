@@ -1,196 +1,152 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-
 <meta charset="UTF-8">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Believable HRMS</title>
 
 <style>
-
-body{
-    margin:0;
-    font-family:Arial;
-    background:#f5f5f5;
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
 }
-
-.sidebar{
-    width:220px;
-    height:100vh;
-    background:#0d6efd;
-    color:white;
-    float:left;
+.sidebar {
+    width: 220px;
+    min-height: 100vh;
+    background: #0d6efd;
+    color: white;
+    float: left;
 }
-
-.sidebar h2{
-    text-align:center;
-    padding:20px;
+.sidebar h2 {
+    text-align: center;
+    padding: 20px 10px;
 }
-
-.sidebar button{
-    width:90%;
-    margin:10px;
-    padding:12px;
-    border:none;
-    background:white;
-    cursor:pointer;
-    font-size:16px;
+.sidebar button {
+    width: 90%;
+    margin: 10px;
+    padding: 12px;
+    border: none;
+    background: white;
+    cursor: pointer;
+    font-size: 16px;
 }
-
-.main{
-    margin-left:220px;
-    padding:20px;
+.main {
+    margin-left: 220px;
+    padding: 20px;
 }
-
-.card{
-    background:white;
-    padding:20px;
-    border-radius:10px;
-    box-shadow:0 0 10px rgba(0,0,0,.1);
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,.1);
+    margin-bottom: 20px;
+    overflow-x: auto;
 }
-
-table{
-    width:100%;
-    border-collapse:collapse;
-    margin-top:20px;
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
 }
-
-th, td{
-    border:1px solid #ddd;
-    padding:10px;
-    text-align:left;
+th, td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
 }
-
-th{
-    background:#0d6efd;
-    color:white;
+th {
+    background: #0d6efd;
+    color: white;
 }
-
-.approve{
-    background:#198754;
-    color:white;
-    border:none;
-    padding:8px 12px;
-    cursor:pointer;
-    border-radius:4px;
+.approve {
+    background: #198754;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
 }
-
-.reject{
-    background:#dc3545;
-    color:white;
-    border:none;
-    padding:8px 12px;
-    cursor:pointer;
-    border-radius:4px;
+.reject {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
 }
-
+@media (max-width: 700px) {
+    .sidebar {
+        width: 100%;
+        min-height: auto;
+        float: none;
+        padding-bottom: 10px;
+    }
+    .sidebar button {
+        width: 44%;
+    }
+    .main {
+        margin-left: 0;
+        padding: 10px;
+    }
+}
 </style>
-
 </head>
 
 <body>
-
 <div class="sidebar">
-
-<h2>Believable HRMS</h2>
-
-<button>
-🏠 Dashboard
-</button>
-
-<button onclick="window.location.href='employee.html'">
-👥 Employees
-</button>
-
-<button onclick="window.location.href='attendance.html'">
-📅 Attendance
-</button>
-
-<button>
-🌴 Leave
-</button>
-
-<button>
-Logout
-</button>
-
+    <h2>Believable HRMS</h2>
+    <button>🏠 Dashboard</button>
+    <button onclick="window.location.href='employee.html'">👥 Employees</button>
+    <button onclick="window.location.href='attendance.html'">📅 Attendance</button>
+    <button onclick="document.getElementById('leaveSection').scrollIntoView({behavior:'smooth'})">🌴 Leave</button>
+    <button onclick="window.location.href='index.html'">Logout</button>
 </div>
-
 
 <div class="main">
+    <div class="card">
+        <h2>Welcome Admin 👋</h2>
+        <p>Believable Financial Services Pvt. Ltd.</p>
+        <p>HRMS Dashboard is ready.</p>
 
-<div class="card">
+        <h2>Late Regularization Requests</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Employee ID</th>
+                    <th>Date</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="regularizationTable">
+                <tr><td colspan="5">Loading...</td></tr>
+            </tbody>
+        </table>
+    </div>
 
-<h2>Welcome Admin 👋</h2>
-
-<p>Believable Financial Services Pvt. Ltd.</p>
-
-<p>HRMS Dashboard is ready.</p>
-
-<hr>
-
-<h2>Late Regularization Requests</h2>
-
-<table>
-
-<thead>
-
-<tr>
-<th>Employee ID</th>
-<th>Date</th>
-<th>Reason</th>
-<th>Status</th>
-<th>Action</th>
-</tr>
-
-</thead>
-
-<tbody id="regularizationTable">
-
-<tr>
-<td colspan="5">Loading...</td>
-</tr>
-
-</tbody>
-
-</table>
-
+    <div class="card" id="leaveSection">
+        <h2>Employee Leave Requests</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Employee ID</th>
+                    <th>Leave Type</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="leaveRequestsTable">
+                <tr><td colspan="7">Waiting for leave requests...</td></tr>
+            </tbody>
+        </table>
+    </div>
 </div>
-
-</div>
-
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script src="js/supabase.js"></script>
-
 <script src="js/admin.js"></script>
-
-    
-<hr>
-
-<h2>Employee Leave Requests</h2>
-
-<table border="1" cellpadding="10" cellspacing="0" width="100%">
-    <thead>
-        <tr>
-            <th>Employee ID</th>
-            <th>Leave Type</th>
-            <th>Start Date</th>
-            <th>End Date</th>
-            <th>Reason</th>
-            <th>Status</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody id="leaveRequestsTable">
-        <tr>
-            <td colspan="7">Loading leave requests...</td>
-        </tr>
-    </tbody>
-</table>
-
 </body>
-
 </html>
