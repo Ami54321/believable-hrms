@@ -101,7 +101,7 @@ async function updateRegularization(id, status) {
 
 // Load Leave Requests
 async function loadLeaveRequests() {
-    const tableBody = document.getElementById("leaveTable");
+    const tableBody = document.getElementById("leaveRequestsTable");
     if (!tableBody) return;
 
     tableBody.innerHTML = "<tr><td colspan='7'>Loading leave requests...</td></tr>";
