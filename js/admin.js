@@ -193,31 +193,35 @@ async function loadLeaveRequests() {
 // =====================================
 // APPROVE OR REJECT LEAVE
 // =====================================
+
 async function updateLeaveStatus(id, status) {
     if (!confirm("Are you sure you want to " + status.toLowerCase() + " this leave request?")) {
         return;
     }
 
-    const { data, error } = await supabaseClient
-        .from("leaves")
-        .update({ status: status })
-        .eq("id", id)
-        .eq("status", "Pending")
-        .select();
+    try {
+        const { data, error } = await supabaseClient.rpc(
+            "process_leave_request",
+            {
+                p_leave_id: id,
+                p_decision: status
+            }
+        );
 
-    if (error) {
-        alert("Error updating leave: " + error.message);
-        return;
-    }
+        if (error) {
+            console.error("Leave processing error:", error);
+            alert("Error processing leave: " + error.message);
+            return;
+        }
 
-    if (!data || data.length === 0) {
-        alert("Leave request was not updated. It may already have been processed, or database permissions may prevent the change.");
+        alert(data || "Leave request processed successfully.");
+
         await loadLeaveRequests();
-        return;
-    }
 
-    alert("Leave request " + status.toLowerCase() + "!");
-    await loadLeaveRequests();
+    } catch (err) {
+        console.error("Unexpected leave processing error:", err);
+        alert("Unexpected error: " + err.message);
+    }
 }
 
 // =====================================
