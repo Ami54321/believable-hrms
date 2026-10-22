@@ -1,4 +1,4 @@
-```javascript
+
 // ================================
 // LOAD LATE REGULARIZATION REQUESTS
 // ================================
