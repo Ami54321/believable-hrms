@@ -1,195 +1,288 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Employee Management</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Believable HRMS - Employee Management</title>
 
 <style>
-
-body{
-    margin:0;
-    font-family:Arial;
-    background:#f5f5f5;
+* {
+    box-sizing: border-box;
 }
 
-.header{
-    background:#0d6efd;
-    color:white;
-    padding:15px;
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f3f6fb;
+    color: #222;
 }
 
-.container{
-    padding:20px;
+.header {
+    background: #0d6efd;
+    color: white;
+    padding: 18px 24px;
 }
 
-.card{
-    background:white;
-    padding:20px;
-    border-radius:10px;
-    box-shadow:0 0 10px rgba(0,0,0,.1);
+.header h2 {
+    margin: 0;
 }
 
-table{
-    width:100%;
-    border-collapse:collapse;
-    margin-top:20px;
+.container {
+    max-width: 1100px;
+    margin: 25px auto;
+    padding: 0 15px;
 }
 
-table, th, td{
-    border:1px solid #ddd;
+.card {
+    background: white;
+    padding: 22px;
+    margin-bottom: 22px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.08);
 }
 
-th, td{
-    padding:10px;
-    text-align:left;
+h3 {
+    margin-top: 0;
+    color: #17365d;
 }
 
-/* Form Style */
-
-input, select{
-    width:100%;
-    padding:10px;
-    margin-bottom:15px;
-    box-sizing:border-box;
+label {
+    display: block;
+    margin: 12px 0 6px;
+    font-weight: bold;
 }
 
-button{
-    padding:10px 20px;
-    background:#0d6efd;
-    color:white;
-    border:none;
-    cursor:pointer;
-    border-radius:5px;
+input, select, textarea {
+    width: 100%;
+    padding: 11px;
+    margin-bottom: 12px;
+    border: 1px solid #ccd3dd;
+    border-radius: 5px;
+    font: inherit;
 }
 
-button:hover{
-    background:#0b5ed7;
+textarea {
+    min-height: 85px;
+    resize: vertical;
 }
 
+button {
+    padding: 10px 17px;
+    background: #0d6efd;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+button:hover {
+    background: #0b5ed7;
+}
+
+hr {
+    border: 0;
+    border-top: 1px solid #e0e5ec;
+    margin: 24px 0;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+th, td {
+    padding: 11px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+th {
+    background: #eef3fb;
+}
+
+.message {
+    margin-top: 12px;
+    font-weight: bold;
+    overflow-wrap: anywhere;
+}
+
+.balance-result {
+    margin-top: 15px;
+    padding: 14px;
+    background: #eef6ff;
+    border-radius: 6px;
+    font-size: 18px;
+    font-weight: bold;
+}
 </style>
-
 </head>
 
 <body>
 
 <div class="header">
-    <h2>Employee Management</h2>
+    <h2>Believable HRMS</h2>
+    <p>Employee Management</p>
 </div>
 
 <div class="container">
 
-<div class="card">
+    <!-- EMPLOYEE MANAGEMENT -->
+    <div class="card">
+        <h3>Add Employee</h3>
 
-<h3>Add Employee</h3>
+        <label for="empid">Employee ID</label>
+        <input type="text" id="empid" placeholder="Employee ID">
 
-<p>
-Employee ID
-</p>
+        <label for="fullname">Full Name</label>
+        <input type="text" id="fullname" placeholder="Full Name">
 
-<input type="text" id="empid" placeholder="Employee ID">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Password">
 
-<p>
-Full Name
-</p>
+        <label for="status">Status</label>
+        <select id="status">
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+        </select>
 
-<input type="text" id="fullname" placeholder="Full Name">
+        <button onclick="addEmployee()">Add Employee</button>
 
-<p>
-Password
-</p>
+        <hr>
 
-<input type="password" id="password" placeholder="Password">
+        <h3>Employee List</h3>
+        <input
+            type="text"
+            id="searchBox"
+            placeholder="Search Employee..."
+            onkeyup="searchEmployee()">
 
-<p>
-Status
-</p>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Employee ID</th>
+                        <th>Name</th>
+                        <th>Password</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="employeeTable">
+                    <tr>
+                        <td colspan="5" style="text-align:center;">
+                            Loading employees...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-<select id="status">
+    <!-- LEAVE BALANCE -->
+    <div class="card">
+        <h3>My Leave Balance</h3>
+        <p>Enter your Employee ID to check your remaining Casual Leaves.</p>
 
-<option>Active</option>
+        <label for="balanceEmployeeId">Employee ID</label>
+        <input
+            type="text"
+            id="balanceEmployeeId"
+            placeholder="Example: E001">
 
-<option>Inactive</option>
+        <button onclick="checkLeaveBalance()">Check Leave Balance</button>
 
-</select>
+        <div id="leaveBalanceResult" class="balance-result">
+            Your remaining leaves will appear here.
+        </div>
+    </div>
 
-<br><br>
+    <!-- APPLY FOR LEAVE -->
+    <div class="card">
+        <h3>Apply for Leave</h3>
 
-<button onclick="addEmployee()">Add Employee</button>
+        <label for="leaveEmployeeId">Employee ID</label>
+        <input
+            type="text"
+            id="leaveEmployeeId"
+            placeholder="Enter Employee ID">
 
-<hr>
+        <label for="leaveType">Leave Type</label>
+        <select id="leaveType">
+            <option value="Casual Leave">Casual Leave</option>
+        </select>
 
-<h3>Employee List</h3>
+        <label for="leaveStartDate">Start Date</label>
+        <input type="date" id="leaveStartDate">
 
-<input
-    type="text"
-    id="searchBox"
-    placeholder="Search Employee..."
-    onkeyup="searchEmployee()">
+        <label for="leaveEndDate">End Date</label>
+        <input type="date" id="leaveEndDate">
 
-<table>
+        <label for="leaveReason">Reason</label>
+        <textarea id="leaveReason" placeholder="Enter reason for leave"></textarea>
 
-<thead>
-<tr>
-<th>Employee ID</th>
-<th>Name</th>
-<th>Password</th>
-<th>Status</th>
-<th>Action</th>
-</tr>
-</thead>
+        <button onclick="applyLeave()">Submit Leave Application</button>
 
-<tbody id="employeeTable">
-
-<tr>
-<td colspan="5" style="text-align:center;">
-No Employees Added Yet
-</td>
-</tr>
-
-</tbody>
-
-</table>
+        <p id="leaveMessage" class="message"></p>
+    </div>
 
 </div>
 
-</div>
-
+<!-- LOAD SUPABASE AND EXISTING APP SCRIPTS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase.js"></script>
 <script src="js/employee.js"></script>
-
-    
-<hr>
-
-<h2>Apply for Leave</h2>
-
-<div>
-    <label>Employee ID:</label><br>
-    <input type="text" id="leaveEmployeeId" placeholder="Enter Employee ID">
-    <br><br>
-
-    <label>Leave Type:</label><br>
-    <select id="leaveType">
-        <option value="Casual Leave">Casual Leave</option>
-    </select>
-    <br><br>
-
-    <label>Start Date:</label><br>
-    <input type="date" id="leaveStartDate">
-    <br><br>
-
-    <label>End Date:</label><br>
-    <input type="date" id="leaveEndDate">
-    <br><br>
-
-    <label>Reason:</label><br>
-    <textarea id="leaveReason" placeholder="Enter reason for leave"></textarea>
-    <br><br>
-
-    <button onclick="applyLeave()">Submit Leave Application</button>
-
-    <p id="leaveMessage"></p>
-</div>    
 <script src="js/leave.js"></script>
+
+<script>
+async function checkLeaveBalance() {
+    const employeeId =
+        document.getElementById("balanceEmployeeId").value.trim();
+    const result = document.getElementById("leaveBalanceResult");
+
+    if (!employeeId) {
+        result.textContent = "Please enter your Employee ID.";
+        return;
+    }
+
+    result.textContent = "Checking balance...";
+
+    try {
+        const { data, error } = await supabaseClient
+            .from("employees")
+            .select("leave_balance")
+            .eq("employee_id", employeeId)
+            .eq("status", "Active")
+            .maybeSingle();
+
+        if (error) {
+            console.error("Leave balance error:", error);
+            result.textContent =
+                "Could not load balance. Please try again.";
+            return;
+        }
+
+        if (!data) {
+            result.textContent =
+                "Active employee not found. Please check the Employee ID.";
+            return;
+        }
+
+        result.textContent =
+            "Remaining Casual Leaves: " + data.leave_balance;
+    } catch (err) {
+        console.error(err);
+        result.textContent =
+            "Something went wrong while checking the balance.";
+    }
+}
+</script>
+
 </body>
 </html>
