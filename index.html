@@ -59,7 +59,7 @@
 
     <h2>Believable HRMS</h2>
 
-    <input type="text" id="userid" placeholder="Employee ID">
+    <input type="text" id="userid" placeholder="Email Address">
 
     <input type="password" id="password" placeholder="Password">
 
@@ -71,21 +71,49 @@
 
 <script>
 
-function login(){
+async function login() {
+    const email = document.getElementById("userid").value.trim();
+    const password = document.getElementById("password").value;
 
-    let id=document.getElementById("userid").value;
-    let pass=document.getElementById("password").value;
+    if (!email || !password) {
+        alert("Please enter your email and password.");
+        return;
+    }
 
-    if(id==="ADMIN" && pass==="admin123"){
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email: email,
+        password: password
+    });
+
+    if (error) {
+        alert("Login failed. Please check your email and password.");
+        return;
+    }
+
+    const { data: employee, error: employeeError } = await supabaseClient
+        .from("employees")
+        .select("employee_id, role, status")
+        .eq("email", email)
+        .maybeSingle();
+
+    if (employeeError || !employee || employee.status !== "Active") {
+        await supabaseClient.auth.signOut();
+        alert("Your HRMS account is not linked to an active employee record. Please contact the admin.");
+        return;
+    }
+
+    if (employee.role === "Admin") {
         window.location.href = "admin.html";
+    } else if (employee.role === "Employee") {
+        window.location.href = "employee.html";
+    } else {
+        await supabaseClient.auth.signOut();
+        alert("Your account role is not configured correctly.");
     }
-    else{
-        alert("Invalid Login");
-    }
-
 }
 
 </script>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
 </body>
 </html>
