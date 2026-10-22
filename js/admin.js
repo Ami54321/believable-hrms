@@ -1,99 +1,79 @@
-```javascript
-// ========================================
-// BELIEVABLE HRMS - ADMIN.JS
-// ========================================
 
+/* BELIEVABLE HRMS - ADMIN.JS */
 
-// LOAD LATE REGULARIZATION REQUESTS
-
+// Load Late Regularization Requests
 async function loadRegularizations() {
-    const table = document.getElementById("regularizationTable");
+    const tableBody = document.getElementById("regularizationTable");
+    if (!tableBody) return;
 
-    if (!table) {
-        console.error("regularizationTable not found in admin.html");
-        return;
-    }
-
-    table.innerHTML = "<tr><td colspan='5'>Loading...</td></tr>";
+    tableBody.innerHTML = "<tr><td colspan='5'>Loading...</td></tr>";
 
     try {
         const { data, error } = await supabaseClient
             .from("late_regularizations")
             .select("*")
-            .order("id", { ascending: true });
+            .order("id", { ascending: false });
 
         if (error) throw error;
 
-        table.innerHTML = "";
+        tableBody.innerHTML = "";
 
         if (!data || data.length === 0) {
-            table.innerHTML =
-                "<tr><td colspan='5'>No regularization requests found.</td></tr>";
+            tableBody.innerHTML = "<tr><td colspan='5'>No requests found.</td></tr>";
             return;
         }
 
-        data.forEach(function (item) {
+        data.forEach(function (request) {
             const row = document.createElement("tr");
 
-            const employeeCell = document.createElement("td");
-            employeeCell.textContent = item.employee_id || "";
+            const employee = document.createElement("td");
+            employee.textContent = request.employee_id || "";
 
-            const dateCell = document.createElement("td");
-            dateCell.textContent = item.attendance_date || "";
+            const date = document.createElement("td");
+            date.textContent = request.attendance_date || request.date || "";
 
-            const reasonCell = document.createElement("td");
-            reasonCell.textContent = item.reason || "";
+            const reason = document.createElement("td");
+            reason.textContent = request.reason || "";
 
-            const statusCell = document.createElement("td");
-            statusCell.textContent = item.status || "";
+            const status = document.createElement("td");
+            status.textContent = request.status || "";
 
-            const actionCell = document.createElement("td");
+            const actions = document.createElement("td");
 
-            if (item.status === "Pending") {
-                const approveButton = document.createElement("button");
-                approveButton.textContent = "Approve";
-                approveButton.onclick = function () {
-                    updateRegularization(item.id, "Approved");
+            if (request.status === "Pending") {
+                const approve = document.createElement("button");
+                approve.textContent = "Approve";
+                approve.onclick = function () {
+                    updateRegularization(request.id, "Approved");
                 };
 
-                const rejectButton = document.createElement("button");
-                rejectButton.textContent = "Reject";
-                rejectButton.onclick = function () {
-                    updateRegularization(item.id, "Rejected");
+                const reject = document.createElement("button");
+                reject.textContent = "Reject";
+                reject.onclick = function () {
+                    updateRegularization(request.id, "Rejected");
                 };
 
-                actionCell.appendChild(approveButton);
-                actionCell.appendChild(rejectButton);
+                actions.appendChild(approve);
+                actions.appendChild(reject);
             } else {
-                actionCell.textContent = "-";
+                actions.textContent = "-";
             }
 
-            row.appendChild(employeeCell);
-            row.appendChild(dateCell);
-            row.appendChild(reasonCell);
-            row.appendChild(statusCell);
-            row.appendChild(actionCell);
-
-            table.appendChild(row);
+            row.append(employee, date, reason, status, actions);
+            tableBody.appendChild(row);
         });
-
     } catch (error) {
-        console.error("Regularization loading error:", error);
-        table.innerHTML =
-            "<tr><td colspan='5'>Could not load requests: " +
+        console.error(error);
+        tableBody.innerHTML =
+            "<tr><td colspan='5'>Error loading requests: " +
             String(error.message) + "</td></tr>";
     }
 }
 
 
-// APPROVE OR REJECT REGULARIZATION
-
+// Approve or Reject Regularization
 async function updateRegularization(id, status) {
-    const confirmed = confirm(
-        "Are you sure you want to " + status.toLowerCase() + " this request?"
-    );
-
-    if (!confirmed) return;
+    if (!confirm("Are you sure you want to " + status + " this request?")) return;
 
     try {
         const { data, error } = await supabaseClient
@@ -112,25 +92,19 @@ async function updateRegularization(id, status) {
         }
 
         await loadRegularizations();
-
     } catch (error) {
-        console.error("Regularization update error:", error);
-        alert("Error: " + error.message);
+        console.error(error);
+        alert("Regularization error: " + error.message);
     }
 }
 
 
-// LOAD LEAVE REQUESTS
-
+// Load Leave Requests
 async function loadLeaveRequests() {
-    const table = document.getElementById("leaveTable");
+    const tableBody = document.getElementById("leaveTable");
+    if (!tableBody) return;
 
-    if (!table) {
-        console.error("leaveTable not found in admin.html");
-        return;
-    }
-
-    table.innerHTML = "<tr><td colspan='7'>Loading leave requests...</td></tr>";
+    tableBody.innerHTML = "<tr><td colspan='7'>Loading leave requests...</td></tr>";
 
     try {
         const { data, error } = await supabaseClient
@@ -140,91 +114,70 @@ async function loadLeaveRequests() {
 
         if (error) throw error;
 
-        table.innerHTML = "";
+        tableBody.innerHTML = "";
 
         if (!data || data.length === 0) {
-            table.innerHTML =
-                "<tr><td colspan='7'>No leave requests found.</td></tr>";
+            tableBody.innerHTML = "<tr><td colspan='7'>No leave requests found.</td></tr>";
             return;
         }
 
-        data.forEach(function (item) {
+        data.forEach(function (leave) {
             const row = document.createElement("tr");
 
-            const employeeCell = document.createElement("td");
-            employeeCell.textContent = item.employee_id || "";
+            const employee = document.createElement("td");
+            employee.textContent = leave.employee_id || "";
 
-            const typeCell = document.createElement("td");
-            typeCell.textContent = item.leave_type || "";
+            const type = document.createElement("td");
+            type.textContent = leave.leave_type || "";
 
-            const startCell = document.createElement("td");
-            startCell.textContent = item.start_date || "";
+            const start = document.createElement("td");
+            start.textContent = leave.start_date || "";
 
-            const endCell = document.createElement("td");
-            endCell.textContent = item.end_date || "";
+            const end = document.createElement("td");
+            end.textContent = leave.end_date || "";
 
-            const reasonCell = document.createElement("td");
-            reasonCell.textContent = item.reason || "";
+            const reason = document.createElement("td");
+            reason.textContent = leave.reason || "";
 
-            const statusCell = document.createElement("td");
-            statusCell.textContent = item.status || "";
+            const status = document.createElement("td");
+            status.textContent = leave.status || "";
 
-            const actionCell = document.createElement("td");
+            const actions = document.createElement("td");
 
-            if (item.status === "Pending") {
-                const approveButton = document.createElement("button");
-                approveButton.textContent = "Approve";
-                approveButton.onclick = function () {
-                    updateLeaveStatus(item.id, "Approved");
+            if (leave.status === "Pending") {
+                const approve = document.createElement("button");
+                approve.textContent = "Approve";
+                approve.onclick = function () {
+                    updateLeaveStatus(leave.id, "Approved");
                 };
 
-                const rejectButton = document.createElement("button");
-                rejectButton.textContent = "Reject";
-                rejectButton.onclick = function () {
-                    updateLeaveStatus(item.id, "Rejected");
+                const reject = document.createElement("button");
+                reject.textContent = "Reject";
+                reject.onclick = function () {
+                    updateLeaveStatus(leave.id, "Rejected");
                 };
 
-                actionCell.appendChild(approveButton);
-                actionCell.appendChild(rejectButton);
+                actions.appendChild(approve);
+                actions.appendChild(reject);
             } else {
-                actionCell.textContent = "-";
+                actions.textContent = "-";
             }
 
-            row.appendChild(employeeCell);
-            row.appendChild(typeCell);
-            row.appendChild(startCell);
-            row.appendChild(endCell);
-            row.appendChild(reasonCell);
-            row.appendChild(statusCell);
-            row.appendChild(actionCell);
-
-            table.appendChild(row);
+            row.append(employee, type, start, end, reason, status, actions);
+            tableBody.appendChild(row);
         });
-
     } catch (error) {
-        console.error("Leave loading error:", error);
-        table.innerHTML =
-            "<tr><td colspan='7'>Could not load leave requests: " +
+        console.error(error);
+        tableBody.innerHTML =
+            "<tr><td colspan='7'>Error loading leaves: " +
             String(error.message) + "</td></tr>";
     }
 }
 
 
-// APPROVE OR REJECT LEAVE
-// Uses the existing Supabase function to update
-// the leave status and deduct the balance together.
-
+// Approve or Reject Leave and Deduct Balance
 async function updateLeaveStatus(id, status) {
-    if (status !== "Approved" && status !== "Rejected") {
-        alert("Invalid leave decision.");
-        return;
-    }
-
-    const confirmed = confirm(
-        "Are you sure you want to " + status.toLowerCase() + " this leave request?"
-    );
-
-    if (!confirmed) return;
+    if (!confirm("Are you sure you want to " + status + " this leave?")) return;
 
     try {
         const { data, error } = await supabaseClient.rpc(
@@ -238,20 +191,22 @@ async function updateLeaveStatus(id, status) {
         if (error) throw error;
 
         alert(data || "Leave request processed successfully.");
-
         await loadLeaveRequests();
-
     } catch (error) {
-        console.error("Leave processing error:", error);
-        alert("Error processing leave: " + error.message);
+        console.error(error);
+        alert("Leave processing error: " + error.message);
     }
 }
 
 
-// LOAD REQUESTS WHEN THE ADMIN PAGE OPENS
-
+// Load Tables When Admin Page Opens
 document.addEventListener("DOMContentLoaded", function () {
+    if (typeof supabaseClient === "undefined") {
+        console.error("Supabase client is not loaded.");
+        alert("Supabase connection is not loaded. Please check your existing script setup.");
+        return;
+    }
+
     loadRegularizations();
     loadLeaveRequests();
 });
-```
