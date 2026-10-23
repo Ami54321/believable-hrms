@@ -99,13 +99,30 @@ async function checkOut() {
         String(nowDate.getSeconds()).padStart(2, "0");
 
 
+    
     // Find today's attendance
     const { data: attendance, error: fetchError } = await supabaseClient
         .from("attendance")
-        .select("check_in")
+        .select("check_in, check_out")
         .eq("employee_id", employeeId)
         .eq("attendance_date", today)
-        .single();
+        .maybeSingle();
+
+    if (fetchError) {
+        alert("Error finding attendance: " + fetchError.message);
+        return;
+    }
+
+    if (!attendance) {
+        alert("Please check in before checking out.");
+        return;
+    }
+
+    if (attendance.check_out) {
+        alert("You have already checked out today.");
+        return;
+    }
+
 
 
     if (fetchError) {
