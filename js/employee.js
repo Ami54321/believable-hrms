@@ -65,7 +65,7 @@ async function loadEmployees() {
         <tr>
             <td>${emp.employee_id}</td>
 <td>${emp.full_name}</td>
-<td>${emp.password}</td>
+<td>Hidden</td>
 <td>${emp.status}</td>
             <td>
                 <button onclick="editEmployee(this)">Edit</button>
