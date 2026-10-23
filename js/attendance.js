@@ -1,4 +1,79 @@
 // ==========================
+// OFFICE GPS LOCATION CHECK
+// ==========================
+
+const OFFICE_LATITUDE = 22.504412568554915;
+const OFFICE_LONGITUDE = 88.39692957624753;
+const OFFICE_RADIUS_METRES = 100;
+
+function checkOfficeLocation() {
+    return new Promise((resolve) => {
+
+        if (!navigator.geolocation) {
+            alert("Your browser does not support GPS location.");
+            resolve(false);
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            function (position) {
+
+                const employeeLat = position.coords.latitude;
+                const employeeLon = position.coords.longitude;
+
+                function toRadians(degrees) {
+                    return degrees * Math.PI / 180;
+                }
+
+                const earthRadius = 6371000;
+
+                const latDifference =
+                    toRadians(employeeLat - OFFICE_LATITUDE);
+
+                const lonDifference =
+                    toRadians(employeeLon - OFFICE_LONGITUDE);
+
+                const a =
+                    Math.sin(latDifference / 2) ** 2 +
+                    Math.cos(toRadians(OFFICE_LATITUDE)) *
+                    Math.cos(toRadians(employeeLat)) *
+                    Math.sin(lonDifference / 2) ** 2;
+
+                const distance =
+                    2 * earthRadius *
+                    Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+                if (distance <= OFFICE_RADIUS_METRES) {
+                    resolve(true);
+                } else {
+                    alert(
+                        "Attendance allowed only at the office. " +
+                        "You are approximately " +
+                        Math.round(distance) +
+                        " metres away."
+                    );
+                    resolve(false);
+                }
+            },
+
+            function () {
+                alert(
+                    "Unable to verify your location. " +
+                    "Please allow location access and try again."
+                );
+                resolve(false);
+            },
+
+            {
+                enableHighAccuracy: true,
+                timeout: 15000,
+                maximumAge: 0
+            }
+        );
+    });
+}
+
+// ==========================
 // CHECK IN
 // ==========================
 async function checkIn() {
