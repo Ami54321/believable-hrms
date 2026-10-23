@@ -242,6 +242,34 @@ th {
 <script src="js/leave.js"></script>
 
 <script>
+    async function checkUserRole() {
+    const { data: { user }, error } = await supabaseClient.auth.getUser();
+
+    if (error || !user) {
+        window.location.href = "index.html";
+        return;
+    }
+
+    const { data: employee, error: employeeError } = await supabaseClient
+        .from("employees")
+        .select("role, status")
+        .eq("email", user.email)
+        .maybeSingle();
+
+    if (employeeError || !employee || employee.status !== "Active") {
+        await supabaseClient.auth.signOut();
+        window.location.href = "index.html";
+        return;
+    }
+
+    const adminSection = document.getElementById("adminEmployeeManagement");
+
+    if (adminSection) {
+        adminSection.style.display =
+            employee.role === "Admin" ? "block" : "none";
+    }
+}
+
     async function logout() {
     const { error } = await supabaseClient.auth.signOut();
 
@@ -294,6 +322,7 @@ async function checkLeaveBalance() {
             "Something went wrong while checking the balance.";
     }
 }
+    checkUserRole();
 </script>
 
 </body>
