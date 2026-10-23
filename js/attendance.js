@@ -77,6 +77,8 @@ function checkOfficeLocation() {
 // CHECK IN
 // ==========================
 async function checkIn() {
+        const isAtOffice = await checkOfficeLocation();
+    if (!isAtOffice) return;
 
     let employeeId = document.getElementById("employeeId").value.trim();
 
