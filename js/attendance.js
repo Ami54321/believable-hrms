@@ -50,11 +50,15 @@ async function checkIn() {
             }
         ]);
 
-
-    if (error) {
+   
+if (error) {
+    if (error.code === "23505") {
+        alert("You have already checked in today.");
+    } else {
         alert("Error: " + error.message);
-        return;
     }
+    return;
+}
 
 
     document.getElementById("message").innerText =
@@ -138,10 +142,14 @@ async function checkOut() {
         .eq("attendance_date", today);
 
 
-    if (error) {
+if (error) {
+    if (error.code === "23505") {
+        alert("You have already checked out today.");
+    } else {
         alert("Error: " + error.message);
-        return;
     }
+    return;
+}
 
 
     document.getElementById("message").innerText =
