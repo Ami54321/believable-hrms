@@ -204,6 +204,49 @@ th {
         </div>
     </div>
 
+    
+    <!-- ATTENDANCE -->
+    <div class="card">
+        <h3>My Attendance</h3>
+
+        <label for="employeeId">Employee ID</label>
+        <input
+            type="text"
+            id="employeeId"
+            placeholder="Enter Employee ID">
+
+        <button onclick="checkIn()">Check In</button>
+        <button onclick="checkOut()">Check Out</button>
+
+        <p id="message" class="message"></p>
+    </div>
+
+    
+    <!-- LATE REGULARIZATION -->
+    <div class="card">
+        <h3>Late Attendance Regularization</h3>
+
+        <label for="regularizationEmployeeId">Employee ID</label>
+        <input
+            type="text"
+            id="regularizationEmployeeId"
+            placeholder="Enter Employee ID">
+
+        <label for="regularizationDate">Attendance Date</label>
+        <input type="date" id="regularizationDate">
+
+        <label for="regularizationReason">Reason</label>
+        <textarea
+            id="regularizationReason"
+            placeholder="Explain why you were late"></textarea>
+
+        <button onclick="applyLateRegularization()">
+            Submit Regularization Request
+        </button>
+
+        <p id="regularizationMessage" class="message"></p>
+    </div>
+
     <!-- APPLY FOR LEAVE -->
     <div class="card">
         <h3>Apply for Leave</h3>
@@ -240,6 +283,7 @@ th {
 <script src="js/supabase.js"></script>
 <script src="js/employee.js"></script>
 <script src="js/leave.js"></script>
+<script src="js/attendance.js"></script>
 
 <script>
     async function checkUserRole() {
