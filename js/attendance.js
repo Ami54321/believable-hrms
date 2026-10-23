@@ -153,6 +153,8 @@ if (error) {
 // CHECK OUT
 // ==========================
 async function checkOut() {
+        const isAtOffice = await checkOfficeLocation();
+    if (!isAtOffice) return;
 
     let employeeId = document.getElementById("employeeId").value.trim();
 
