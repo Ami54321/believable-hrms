@@ -1,149 +1,405 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Believable HRMS</title>
+<title>Believable HRMS | Admin Dashboard</title>
 
 <style>
+:root {
+    --navy: #17365d;
+    --blue: #2563eb;
+    --bg: #f3f6fb;
+    --border: #e2e8f0;
+    --text: #1e293b;
+    --muted: #64748b;
+}
+* { box-sizing: border-box; }
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background: #f5f5f5;
+    background: var(--bg);
+    color: var(--text);
 }
 .sidebar {
-    width: 220px;
-    min-height: 100vh;
-    background: #0d6efd;
+    position: fixed;
+    top: 0; bottom: 0; left: 0;
+    width: 235px;
+    background: var(--navy);
     color: white;
-    float: left;
+    padding: 22px 14px;
+    overflow-y: auto;
 }
-.sidebar h2 {
-    text-align: center;
-    padding: 20px 10px;
+.brand {
+    padding: 8px 10px 24px;
+    border-bottom: 1px solid #ffffff30;
+    margin-bottom: 20px;
 }
+.brand h2 { margin: 0 0 7px; font-size: 21px; }
+.brand p { margin: 0; font-size: 12px; color: #dbeafe; line-height: 1.5; }
 .sidebar button {
-    width: 90%;
-    margin: 10px;
-    padding: 12px;
-    border: none;
-    background: white;
+    width: 100%;
+    padding: 13px 12px;
+    margin: 4px 0;
+    color: white;
+    background: transparent;
+    border: 0;
+    border-radius: 8px;
+    text-align: left;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 14px;
+}
+.sidebar button:hover, .sidebar button.active {
+    background: #ffffff20;
 }
 .main {
-    margin-left: 220px;
-    padding: 20px;
+    margin-left: 235px;
+    padding: 28px;
+    max-width: 1600px;
 }
-.card {
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+h1 { margin: 0 0 7px; font-size: 27px; }
+h2 { font-size: 19px; margin: 0 0 8px; }
+h3 { font-size: 16px; margin: 0 0 14px; }
+p { line-height: 1.5; }
+.subtitle { color: var(--muted); margin: 0; font-size: 14px; }
+.admin-label {
     background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,.1);
-    margin-bottom: 20px;
-    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 9px 14px;
+    font-size: 13px;
 }
-table {
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 22px;
+}
+.stat, .card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    box-shadow: 0 2px 8px #0f172a08;
+}
+.stat { padding: 19px; }
+.stat-label { color: var(--muted); font-size: 13px; }
+.stat-number { font-size: 28px; font-weight: 700; margin-top: 12px; }
+.card { padding: 22px; margin-bottom: 22px; min-width: 0; }
+.card-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+.field-label {
+    display: block;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 7px;
+}
+input, select, button {
+    font: inherit;
+}
+input, select {
     width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
+    padding: 11px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background: white;
+    color: var(--text);
 }
-th, td {
-    border: 1px solid #ddd;
-    padding: 10px;
+.filters {
+    display: grid;
+    grid-template-columns: minmax(200px, 1.5fr) minmax(150px, 1fr) auto;
+    gap: 14px;
+    align-items: end;
+    margin-bottom: 20px;
+}
+.primary-btn, .secondary-btn {
+    border: 0;
+    border-radius: 8px;
+    padding: 11px 15px;
+    cursor: pointer;
+    font-weight: 600;
+}
+.primary-btn { background: var(--blue); color: white; }
+.secondary-btn { background: #eaf0f8; color: var(--navy); }
+.calendar-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+.calendar-controls { display: flex; gap: 8px; }
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 7px;
+}
+.weekday {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    padding: 9px 0;
+}
+.day {
+    min-height: 85px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: white;
+    padding: 8px;
     text-align: left;
-}
-th {
-    background: #0d6efd;
-    color: white;
-}
-.approve {
-    background: #198754;
-    color: white;
-    border: none;
-    padding: 8px 12px;
     cursor: pointer;
-    border-radius: 4px;
 }
-.reject {
-    background: #dc3545;
-    color: white;
-    border: none;
-    padding: 8px 12px;
+.day:hover { border-color: var(--blue); }
+.day.empty { background: #f8fafc; cursor: default; }
+.day-number { font-size: 13px; font-weight: 700; }
+.day-status {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 4px 6px;
+    border-radius: 5px;
+    font-size: 10px;
+    font-weight: 700;
+}
+.present { background: #dcfce7; color: #166534; }
+.late { background: #fef3c7; color: #92400e; }
+.absent { background: #fee2e2; color: #991b1b; }
+.leave { background: #dbeafe; color: #1d4ed8; }
+.off { background: #f1f5f9; color: #475569; }
+.legend {
+    display: flex;
+    gap: 8px 14px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+    font-size: 12px;
+    color: var(--muted);
+}
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+.details {
+    margin-top: 18px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: #f8fafc;
+}
+.details p { margin: 8px 0; font-size: 14px; }
+.table-wrap { width: 100%; overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; min-width: 650px; }
+th, td {
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    font-size: 13px;
+    vertical-align: top;
+}
+th { background: #f8fafc; color: #475569; }
+td button {
+    margin: 2px;
+    border: 0;
+    border-radius: 6px;
+    padding: 7px 10px;
     cursor: pointer;
-    border-radius: 4px;
+}
+#regularizationTable button:first-child,
+#leaveRequestsTable button:first-child {
+    background: #dcfce7;
+    color: #166534;
+}
+#regularizationTable button:last-child,
+#leaveRequestsTable button:last-child {
+    background: #fee2e2;
+    color: #991b1b;
+}
+.notice {
+    padding: 12px 14px;
+    background: #eff6ff;
+    color: #1e40af;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 16px;
+}
+@media (max-width: 1000px) {
+    .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .main { padding: 18px; }
 }
 @media (max-width: 700px) {
     .sidebar {
+        position: static;
         width: 100%;
-        min-height: auto;
-        float: none;
-        padding-bottom: 10px;
+        padding: 12px;
     }
-    .sidebar button {
-        width: 44%;
-    }
-    .main {
-        margin-left: 0;
-        padding: 10px;
-    }
+    .brand { padding-bottom: 12px; margin-bottom: 8px; }
+    .sidebar button { width: auto; display: inline-block; padding: 10px; }
+    .main { margin-left: 0; padding: 12px; }
+    .topbar { align-items: flex-start; }
+    h1 { font-size: 23px; }
+    .stats { gap: 10px; }
+    .stat { padding: 13px; }
+    .stat-number { font-size: 23px; }
+    .card { padding: 15px; }
+    .filters { grid-template-columns: 1fr; }
+    .calendar-grid { gap: 3px; }
+    .day { min-height: 65px; padding: 4px; }
+    .day-status { font-size: 9px; padding: 3px; }
 }
 </style>
 </head>
 
 <body>
-<div class="sidebar">
-    <h2>Believable HRMS</h2>
-    <button>🏠 Dashboard</button>
-    <button onclick="window.location.href='employee.html'">👥 Employees</button>
-    <button onclick="window.location.href='attendance.html'">📅 Attendance</button>
-    <button onclick="document.getElementById('leaveSection').scrollIntoView({behavior:'smooth'})">🌴 Leave</button>
-    <button onclick="window.location.href='index.html'">Logout</button>
-</div>
-
-<div class="main">
-    <div class="card">
-        <h2>Welcome Admin 👋</h2>
+<aside class="sidebar">
+    <div class="brand">
+        <h2>Believable HRMS</h2>
         <p>Believable Financial Services Pvt. Ltd.</p>
-        <p>HRMS Dashboard is ready.</p>
+    </div>
+    <button class="active" onclick="document.getElementById('dashboardSection').scrollIntoView({behavior:'smooth'})">▦ Dashboard</button>
+    <button onclick="window.location.href='employee.html'">♙ Employee Management</button>
+    <button onclick="window.location.href='attendance.html'">▦ Attendance</button>
+    <button onclick="document.getElementById('calendarSection').scrollIntoView({behavior:'smooth'})">▦ Employee Calendar</button>
+    <button onclick="document.getElementById('leaveSection').scrollIntoView({behavior:'smooth'})">▤ Leave Requests</button>
+    <button onclick="document.getElementById('regularizationSection').scrollIntoView({behavior:'smooth'})">◷ Late Regularization</button>
+    <button onclick="window.location.href='index.html'">↪ Logout</button>
+</aside>
 
-        <h2>Late Regularization Requests</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Employee ID</th>
-                    <th>Date</th>
-                    <th>Reason</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="regularizationTable">
-                <tr><td colspan="5">Loading...</td></tr>
-            </tbody>
-        </table>
+<main class="main" id="dashboardSection">
+    <div class="topbar">
+        <div>
+            <h1>Admin Dashboard</h1>
+            <p class="subtitle">Monitor employee attendance, leave and requests.</p>
+        </div>
+        <div class="admin-label">Administrator</div>
     </div>
 
-    <div class="card" id="leaveSection">
-        <h2>Employee Leave Requests</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Employee ID</th>
-                    <th>Leave Type</th>
-                    <th>Start Date</th>
-                    <th>End Date</th>
-                    <th>Reason</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="leaveRequestsTable">
-                <tr><td colspan="7">Waiting for leave requests...</td></tr>
-            </tbody>
-        </table>
-    </div>
-</div>
+    <section class="stats">
+        <div class="stat">
+            <div class="stat-label">Total Employees</div>
+            <div class="stat-number" id="totalEmployees">—</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Present Today</div>
+            <div class="stat-number" id="presentToday">—</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Late Arrivals Today</div>
+            <div class="stat-number" id="lateToday">—</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Pending Requests</div>
+            <div class="stat-number" id="pendingRequests">—</div>
+        </div>
+    </section>
+
+    <section class="card" id="calendarSection">
+        <div class="card-heading">
+            <div>
+                <h2>Employee Attendance Calendar</h2>
+                <p class="subtitle">Choose an employee and month to inspect their records.</p>
+            </div>
+        </div>
+
+        <div class="filters">
+            <div>
+                <label class="field-label" for="employeeSearch">Search employee</label>
+                <input id="employeeSearch" list="employeeOptions" placeholder="Search by employee name or ID">
+                <datalist id="employeeOptions"></datalist>
+            </div>
+            <div>
+                <label class="field-label" for="calendarMonth">Select month</label>
+                <input type="month" id="calendarMonth">
+            </div>
+            <button class="primary-btn" id="loadCalendarBtn" type="button">View Calendar</button>
+        </div>
+
+        <div id="calendarMessage" class="notice">Select an employee and month, then click View Calendar.</div>
+
+        <div class="calendar-head">
+            <h3 id="calendarTitle">Attendance Overview</h3>
+            <div class="calendar-controls">
+                <button class="secondary-btn" id="previousMonth" type="button">←</button>
+                <button class="secondary-btn" id="nextMonth" type="button">→</button>
+            </div>
+        </div>
+
+        <div class="calendar-grid" id="calendarGrid">
+            <div class="weekday">Mon</div>
+            <div class="weekday">Tue</div>
+            <div class="weekday">Wed</div>
+            <div class="weekday">Thu</div>
+            <div class="weekday">Fri</div>
+            <div class="weekday">Sat</div>
+            <div class="weekday">Sun</div>
+        </div>
+
+        <div class="legend">
+            <span><i class="dot" style="background:#22c55e"></i> Present</span>
+            <span><i class="dot" style="background:#f59e0b"></i> Late</span>
+            <span><i class="dot" style="background:#ef4444"></i> Absent</span>
+            <span><i class="dot" style="background:#3b82f6"></i> Leave</span>
+            <span><i class="dot" style="background:#94a3b8"></i> Weekly Off</span>
+        </div>
+
+        <div id="dayDetails" class="details">
+            <h3>Daily Details</h3>
+            <p>Select a date in the calendar to see its records.</p>
+        </div>
+    </section>
+
+    <section class="card" id="regularizationSection">
+        <div class="card-heading">
+            <div>
+                <h2>Late Regularization Requests</h2>
+                <p class="subtitle">Review and process employee requests.</p>
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Employee ID</th><th>Date</th><th>Reason</th><th>Status</th><th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="regularizationTable">
+                    <tr><td colspan="5">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="card" id="leaveSection">
+        <div class="card-heading">
+            <div>
+                <h2>Employee Leave Requests</h2>
+                <p class="subtitle">Review applications and leave decisions.</p>
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Employee ID</th><th>Leave Type</th><th>Start Date</th>
+                        <th>End Date</th><th>Reason</th><th>Status</th><th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="leaveRequestsTable">
+                    <tr><td colspan="7">Waiting for leave requests...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase.js"></script>
