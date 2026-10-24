@@ -216,6 +216,7 @@ th { background: #f8fafc; color: #475569; }
                 <thead>
                     <tr>
                         <th>Employee ID</th>
+                        <th>Employee Name</th>
                         <th>Date</th>
                         <th>Check In</th>
                         <th>Check Out</th>
@@ -251,7 +252,7 @@ th { background: #f8fafc; color: #475569; }
 
     let query = supabaseClient
         .from("attendance")
-        .select("employee_id, attendance_date, check_in, check_out, working_hours, attendance_status")
+.select("employee_id, attendance_date, check_in, check_out, working_hours, attendance_status")
         .order("attendance_date", { ascending: false });
 
     const employeeId = document.getElementById("employeeFilter").value.trim();
@@ -272,26 +273,42 @@ th { background: #f8fafc; color: #475569; }
 
     const { data, error } = await query;
 
-    if (error) {
-        message.textContent = "Could not load records: " + error.message;
-        return;
-    }
+if (error) {
+    message.textContent = "Could not load records: " + error.message;
+    return;
+}
+
+// Get employee names from the employees table
+const { data: employees, error: employeesError } = await supabaseClient
+    .from("employees")
+    .select("employee_id, full_name");
+
+if (employeesError) {
+    message.textContent = "Could not load employee names: " + employeesError.message;
+    return;
+}
+
+const employeeNames = {};
+employees.forEach(emp => {
+    employeeNames[emp.employee_id] = emp.full_name;
+});
 
     if (!data || data.length === 0) {
         table.innerHTML =
-            '<tr><td colspan="6">No attendance records found.</td></tr>';
+            '<tr><td colspan="7">No attendance records found.</td></tr>';
     } else {
         data.forEach(record => {
             const row = document.createElement("tr");
 
             [
-                record.employee_id,
-                record.attendance_date,
-                record.check_in || "—",
-                record.check_out || "—",
-                record.working_hours || "—",
-                record.attendance_status || "—"
-            ].forEach(value => {
+    record.employee_id,
+    employeeNames[record.employee_id] || "Name not found",
+    record.attendance_date,
+    record.check_in || "—",
+    record.check_out || "—",
+    record.working_hours || "—",
+    record.attendance_status || "—"
+].forEach(value => {
                 const cell = document.createElement("td");
                 cell.textContent = value;
                 row.appendChild(cell);
