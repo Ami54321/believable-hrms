@@ -1,6 +1,13 @@
 
 async function applyLeave() {
-    const employeeId = document.getElementById("leaveEmployeeId").value.trim();
+    const employee = window.loggedInEmployee;
+
+if (!employee || !employee.employee_id) {
+    alert("Your employee account could not be verified. Please log in again.");
+    return;
+}
+
+const employeeId = employee.employee_id;
     const leaveType = document.getElementById("leaveType").value;
     const startDate = document.getElementById("leaveStartDate").value;
     const endDate = document.getElementById("leaveEndDate").value;
