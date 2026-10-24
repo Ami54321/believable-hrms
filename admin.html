@@ -403,6 +403,35 @@ td button {
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase.js"></script>
-<script src="js/admin.js"></script>
+
+<script>
+(async function checkAdminAccess() {
+    const { data, error } = await supabaseClient.auth.getUser();
+
+    if (error || !data.user) {
+        window.location.replace("index.html");
+        return;
+    }
+
+    const { data: employee, error: employeeError } = await supabaseClient
+        .from("employees")
+        .select("role, status")
+        .eq("email", data.user.email)
+        .maybeSingle();
+
+    if (employeeError || !employee ||
+        employee.role !== "Admin" ||
+        employee.status !== "Active") {
+        alert("Access denied. Admin permission is required.");
+        await supabaseClient.auth.signOut();
+        window.location.replace("index.html");
+        return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "js/admin.js";
+    document.body.appendChild(script);
+})();
+</script>
 </body>
 </html>
