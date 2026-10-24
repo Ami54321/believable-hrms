@@ -296,7 +296,7 @@ th {
 
     const { data: employee, error: employeeError } = await supabaseClient
         .from("employees")
-        .select("role, status")
+        const { data: employee, error: employeeError } = await supabaseClient     .from("employees")     .select("employee_id, full_name, role, status, leave_balance")     .eq("email", user.email)     .maybeSingle();
         .eq("email", user.email)
         .maybeSingle();
 
