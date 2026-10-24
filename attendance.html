@@ -1,136 +1,251 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-
 <meta charset="UTF-8">
-
-<title>Attendance - Believable HRMS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attendance Records | Believable HRMS</title>
 
 <style>
-
-body{
-    margin:0;
-    font-family:Arial;
-    background:#f5f5f5;
+:root {
+    --navy: #17365d;
+    --blue: #2563eb;
+    --bg: #f3f6fb;
+    --border: #e2e8f0;
+    --text: #1e293b;
+    --muted: #64748b;
 }
-
-.header{
-    background:#0d6efd;
-    color:white;
-    padding:15px;
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
 }
-
-.container{
-    padding:20px;
+.sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: 230px;
+    padding: 22px 14px;
+    background: var(--navy);
+    color: white;
 }
-
-.card{
-    background:white;
-    padding:20px;
-    border-radius:10px;
-    box-shadow:0 0 10px rgba(0,0,0,.1);
+.brand {
+    padding: 8px 10px 22px;
+    border-bottom: 1px solid #ffffff30;
+    margin-bottom: 20px;
 }
-
-button{
-    padding:12px 25px;
-    background:#198754;
-    color:white;
-    border:none;
-    border-radius:5px;
-    cursor:pointer;
+.brand h2 { font-size: 21px; margin: 0 0 8px; }
+.brand p { font-size: 12px; line-height: 1.5; color: #dbeafe; margin: 0; }
+.sidebar a {
+    display: block;
+    text-decoration: none;
+    color: white;
+    padding: 13px 12px;
+    border-radius: 8px;
+    margin: 5px 0;
+    font-size: 14px;
 }
-
-button:hover{
-    background:#157347;
+.sidebar a:hover, .sidebar a.active { background: #ffffff20; }
+.main { margin-left: 230px; padding: 28px; }
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
 }
-
+h1 { margin: 0 0 8px; font-size: 27px; }
+h2 { font-size: 19px; margin: 0 0 8px; }
+p { line-height: 1.5; }
+.muted { color: var(--muted); font-size: 14px; margin: 0; }
+.admin-label {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 9px 14px;
+    font-size: 13px;
+}
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 22px;
+}
+.stat, .card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    box-shadow: 0 2px 8px #0f172a08;
+}
+.stat { padding: 20px; }
+.stat-label { color: var(--muted); font-size: 13px; }
+.stat-value { font-size: 28px; font-weight: 700; margin-top: 12px; }
+.card { padding: 22px; margin-bottom: 22px; }
+.filters {
+    display: grid;
+    grid-template-columns: minmax(180px, 1.3fr) minmax(160px, 1fr) minmax(150px, 1fr) auto;
+    gap: 13px;
+    align-items: end;
+    margin-top: 20px;
+}
+label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 7px; }
+input, select, button { font: inherit; }
+input, select {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background: white;
+    color: var(--text);
+}
+button {
+    padding: 11px 15px;
+    border: 0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+.primary { background: var(--blue); color: white; }
+.secondary { background: #eaf0f8; color: var(--navy); }
+.table-wrap { overflow-x: auto; margin-top: 18px; }
+table { width: 100%; min-width: 750px; border-collapse: collapse; }
+th, td {
+    padding: 13px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    font-size: 13px;
+}
+th { background: #f8fafc; color: #475569; }
+.status {
+    display: inline-block;
+    padding: 5px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+}
+.status-present { background: #dcfce7; color: #166534; }
+.status-late { background: #fef3c7; color: #92400e; }
+.status-absent { background: #fee2e2; color: #991b1b; }
+.status-other { background: #e2e8f0; color: #334155; }
+.notice {
+    background: #eff6ff;
+    color: #1e40af;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 13px;
+    margin-top: 16px;
+}
+@media(max-width:1000px) {
+    .filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media(max-width:700px) {
+    .sidebar { position: static; width: 100%; padding: 12px; }
+    .brand { padding-bottom: 12px; margin-bottom: 8px; }
+    .sidebar a { display: inline-block; padding: 10px; }
+    .main { margin-left: 0; padding: 12px; }
+    .topbar { align-items: flex-start; }
+    h1 { font-size: 23px; }
+    .card { padding: 15px; }
+    .filters, .stats { grid-template-columns: 1fr; }
+}
 </style>
-
 </head>
 
 <body>
+<aside class="sidebar">
+    <div class="brand">
+        <h2>Believable HRMS</h2>
+        <p>Believable Financial Services Pvt. Ltd.</p>
+    </div>
+    <a href="admin.html">▦ Dashboard</a>
+    <a href="employee.html">♙ Employee Management</a>
+    <a class="active" href="attendance.html">▦ Attendance Records</a>
+    <a href="admin.html#leaveSection">▤ Leave Requests</a>
+    <a href="admin.html#regularizationSection">◷ Late Regularization</a>
+    <a href="index.html">↪ Logout</a>
+</aside>
 
-<div class="header">
-    <h2>Attendance</h2>
-</div>
+<main class="main">
+    <div class="topbar">
+        <div>
+            <h1>Attendance Records</h1>
+            <p class="muted">Review employee check-in and check-out records.</p>
+        </div>
+        <div class="admin-label">Administrator</div>
+    </div>
 
-<div class="container">
+    <section class="stats">
+        <div class="stat">
+            <div class="stat-label">Records Found</div>
+            <div class="stat-value" id="recordsCount">—</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Present</div>
+            <div class="stat-value" id="presentCount">—</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Late Arrivals</div>
+            <div class="stat-value" id="lateCount">—</div>
+        </div>
+    </section>
 
-<div class="card">
+    <section class="card">
+        <h2>Search Attendance</h2>
+        <p class="muted">Filter attendance records by employee and date.</p>
 
-<h3>Employee Attendance</h3>
+        <div class="filters">
+            <div>
+                <label for="employeeFilter">Employee ID</label>
+                <input id="employeeFilter" placeholder="Enter employee ID">
+            </div>
+            <div>
+                <label for="dateFrom">From date</label>
+                <input type="date" id="dateFrom">
+            </div>
+            <div>
+                <label for="dateTo">To date</label>
+                <input type="date" id="dateTo">
+            </div>
+            <button class="primary" id="searchBtn" type="button">Search</button>
+        </div>
 
-<p>Employee ID</p>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Employee ID</th>
+                        <th>Date</th>
+                        <th>Check In</th>
+                        <th>Check Out</th>
+                        <th>Working Hours</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="attendanceRecords">
+                    <tr><td colspan="6">Loading attendance records...</td></tr>
+                </tbody>
+            </table>
+        </div>
 
-<input
-    type="text"
-    id="employeeId"
-    placeholder="Enter Employee ID"
->
-
-<br><br>
-
-<button onclick="checkIn()">
-    Check In
-</button>
-
-<br><br>
-
-<button onclick="checkOut()">
-    Check Out
-</button>
-
-<p id="message"></p>
-
-<hr>
-
-<h3>Late Regularization</h3>
-
-<p>Employee ID</p>
-
-<input
-    type="text"
-    id="regularizationEmployeeId"
-    placeholder="Employee ID"
->
-
-<br><br>
-
-<p>Late Attendance Date</p>
-
-<input
-    type="date"
-    id="regularizationDate"
->
-
-<br><br>
-
-<p>Reason</p>
-
-<textarea
-    id="regularizationReason"
-    placeholder="Enter reason for late attendance"
-    rows="4"
-    style="width:100%; box-sizing:border-box; padding:10px;"
-></textarea>
-
-<br><br>
-
-<button onclick="applyLateRegularization()">
-    Apply Regularization
-</button>
-
-<p id="regularizationMessage"></p>
-
-</div>
-
-</div>
+        <div id="attendanceMessage" class="notice">
+            Attendance records will appear here after the admin records loader is connected.
+        </div>
+    </section>
+</main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script src="js/supabase.js"></script>
-
-<script src="js/attendance.js"></script>
-
+<script>
+/*
+  Admin attendance display will be connected to Supabase in the next step.
+  The employee check-in functions remain in js/attendance.js and are not changed.
+*/
+document.getElementById("searchBtn").addEventListener("click", function () {
+    document.getElementById("attendanceMessage").textContent =
+        "The admin attendance search is ready for its database connection.";
+});
+</script>
 </body>
 </html>
