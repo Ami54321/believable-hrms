@@ -242,10 +242,77 @@ th { background: #f8fafc; color: #475569; }
   Admin attendance display will be connected to Supabase in the next step.
   The employee check-in functions remain in js/attendance.js and are not changed.
 */
-document.getElementById("searchBtn").addEventListener("click", function () {
-    document.getElementById("attendanceMessage").textContent =
-        "The admin attendance search is ready for its database connection.";
-});
+    async function loadAttendanceRecords() {
+    const message = document.getElementById("attendanceMessage");
+    const table = document.getElementById("attendanceRecords");
+
+    message.textContent = "Loading attendance records...";
+    table.innerHTML = "";
+
+    let query = supabaseClient
+        .from("attendance")
+        .select("employee_id, attendance_date, check_in, check_out, working_hours, attendance_status")
+        .order("attendance_date", { ascending: false });
+
+    const employeeId = document.getElementById("employeeFilter").value.trim();
+    const dateFrom = document.getElementById("dateFrom").value;
+    const dateTo = document.getElementById("dateTo").value;
+
+    if (employeeId) {
+        query = query.eq("employee_id", employeeId);
+    }
+
+    if (dateFrom) {
+        query = query.gte("attendance_date", dateFrom);
+    }
+
+    if (dateTo) {
+        query = query.lte("attendance_date", dateTo);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+        message.textContent = "Could not load records: " + error.message;
+        return;
+    }
+
+    if (!data || data.length === 0) {
+        table.innerHTML =
+            '<tr><td colspan="6">No attendance records found.</td></tr>';
+    } else {
+        data.forEach(record => {
+            const row = document.createElement("tr");
+
+            [
+                record.employee_id,
+                record.attendance_date,
+                record.check_in || "—",
+                record.check_out || "—",
+                record.working_hours || "—",
+                record.attendance_status || "—"
+            ].forEach(value => {
+                const cell = document.createElement("td");
+                cell.textContent = value;
+                row.appendChild(cell);
+            });
+
+            table.appendChild(row);
+        });
+    }
+
+    document.getElementById("recordsCount").textContent = data.length;
+    document.getElementById("presentCount").textContent =
+        data.filter(r => r.check_in).length;
+    document.getElementById("lateCount").textContent =
+        data.filter(r => r.attendance_status === "Late").length;
+
+    message.textContent = "Attendance records loaded successfully.";
+}
+
+document.getElementById("searchBtn").addEventListener("click", loadAttendanceRecords);
+
+loadAttendanceRecords();
 </script>
 </body>
 </html>
