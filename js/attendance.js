@@ -80,12 +80,14 @@ async function checkIn() {
         const isAtOffice = await checkOfficeLocation();
     if (!isAtOffice) return;
 
-    let employeeId = document.getElementById("employeeId").value.trim();
+    let employee = window.loggedInEmployee;
 
-    if (employeeId === "") {
-        alert("Please enter Employee ID");
-        return;
-    }
+if (!employee || !employee.employee_id) {
+    alert("Your employee account could not be verified. Please log in again.");
+    return;
+}
+
+let employeeId = employee.employee_id;
 
     let nowDate = new Date();
 
