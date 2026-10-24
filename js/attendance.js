@@ -263,8 +263,14 @@ if (error) {
 
 async function applyLateRegularization() {
 
-    let employeeId =
-        document.getElementById("regularizationEmployeeId").value.trim();
+    let employee = window.loggedInEmployee;
+
+if (!employee || !employee.employee_id) {
+    alert("Your employee account could not be verified. Please log in again.");
+    return;
+}
+
+let employeeId = employee.employee_id;
 
     let attendanceDate =
         document.getElementById("regularizationDate").value;
