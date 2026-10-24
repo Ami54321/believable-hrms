@@ -4,12 +4,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Believable HRMS - Employee Management</title>
+<title>Believable HRMS</title>
 
 <style>
-* {
-    box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
     margin: 0;
@@ -24,8 +22,12 @@ body {
     padding: 18px 24px;
 }
 
-.header h2 {
-    margin: 0;
+.header h2 { margin: 0; }
+
+.header button {
+    margin-top: 12px;
+    background: white;
+    color: #0d6efd;
 }
 
 .container {
@@ -62,10 +64,7 @@ input, select, textarea {
     font: inherit;
 }
 
-textarea {
-    min-height: 85px;
-    resize: vertical;
-}
+textarea { min-height: 85px; resize: vertical; }
 
 button {
     padding: 10px 17px;
@@ -77,9 +76,7 @@ button {
     font-size: 14px;
 }
 
-button:hover {
-    background: #0b5ed7;
-}
+button:hover { background: #0b5ed7; }
 
 hr {
     border: 0;
@@ -87,9 +84,7 @@ hr {
     margin: 24px 0;
 }
 
-.table-wrapper {
-    overflow-x: auto;
-}
+.table-wrapper { overflow-x: auto; }
 
 table {
     width: 100%;
@@ -103,9 +98,7 @@ th, td {
     border: 1px solid #ddd;
 }
 
-th {
-    background: #eef3fb;
-}
+th { background: #eef3fb; }
 
 .message {
     margin-top: 12px;
@@ -121,21 +114,23 @@ th {
     font-size: 18px;
     font-weight: bold;
 }
+
+.hidden { display: none !important; }
 </style>
 </head>
 
 <body>
-
 <div class="header">
     <h2>Believable HRMS</h2>
+    <p>Believable Financial Services Pvt. Ltd.</p>
+    <p id="welcomeMessage">Checking login...</p>
     <button onclick="logout()">Logout</button>
-    <p>Employee Management</p>
 </div>
 
 <div class="container">
 
-    <!-- EMPLOYEE MANAGEMENT -->
-    <div class="card" id="adminEmployeeManagement">
+    <!-- ADMIN ONLY: EMPLOYEE MANAGEMENT -->
+    <div class="card hidden" id="adminEmployeeManagement">
         <h3>Add Employee</h3>
 
         <label for="empid">Employee ID</label>
@@ -156,13 +151,10 @@ th {
         <button onclick="addEmployee()">Add Employee</button>
 
         <hr>
-
         <h3>Employee List</h3>
-        <input
-            type="text"
-            id="searchBox"
-            placeholder="Search Employee..."
-            onkeyup="searchEmployee()">
+        <input type="text" id="searchBox"
+               placeholder="Search Employee..."
+               onkeyup="searchEmployee()">
 
         <div class="table-wrapper">
             <table>
@@ -189,73 +181,38 @@ th {
     <!-- LEAVE BALANCE -->
     <div class="card">
         <h3>My Leave Balance</h3>
-        <p>Enter your Employee ID to check your remaining Casual Leaves.</p>
-
-        <label for="balanceEmployeeId">Employee ID</label>
-        <input
-            type="text"
-            id="balanceEmployeeId"
-            placeholder="Example: E001">
-
-        <button onclick="checkLeaveBalance()">Check Leave Balance</button>
-
-        <div id="leaveBalanceResult" class="balance-result">
-            Your remaining leaves will appear here.
-        </div>
+        <p id="myLeaveBalance">Loading your leave balance...</p>
     </div>
 
-    
     <!-- ATTENDANCE -->
     <div class="card">
         <h3>My Attendance</h3>
-
-        <label for="employeeId">Employee ID</label>
-        <input
-            type="text"
-            id="employeeId"
-            placeholder="Enter Employee ID">
-
+        <p>Employee ID: <strong id="attendanceEmployeeId">Loading...</strong></p>
         <button onclick="checkIn()">Check In</button>
         <button onclick="checkOut()">Check Out</button>
-
         <p id="message" class="message"></p>
     </div>
 
-    
     <!-- LATE REGULARIZATION -->
     <div class="card">
         <h3>Late Attendance Regularization</h3>
-
-        <label for="regularizationEmployeeId">Employee ID</label>
-        <input
-            type="text"
-            id="regularizationEmployeeId"
-            placeholder="Enter Employee ID">
 
         <label for="regularizationDate">Attendance Date</label>
         <input type="date" id="regularizationDate">
 
         <label for="regularizationReason">Reason</label>
-        <textarea
-            id="regularizationReason"
-            placeholder="Explain why you were late"></textarea>
+        <textarea id="regularizationReason"
+                  placeholder="Explain why you were late"></textarea>
 
         <button onclick="applyLateRegularization()">
             Submit Regularization Request
         </button>
-
         <p id="regularizationMessage" class="message"></p>
     </div>
 
     <!-- APPLY FOR LEAVE -->
     <div class="card">
         <h3>Apply for Leave</h3>
-
-        <label for="leaveEmployeeId">Employee ID</label>
-        <input
-            type="text"
-            id="leaveEmployeeId"
-            placeholder="Enter Employee ID">
 
         <label for="leaveType">Leave Type</label>
         <select id="leaveType">
@@ -272,13 +229,11 @@ th {
         <textarea id="leaveReason" placeholder="Enter reason for leave"></textarea>
 
         <button onclick="applyLeave()">Submit Leave Application</button>
-
         <p id="leaveMessage" class="message"></p>
     </div>
 
 </div>
 
-<!-- LOAD SUPABASE AND EXISTING APP SCRIPTS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase.js"></script>
 <script src="js/employee.js"></script>
@@ -286,35 +241,54 @@ th {
 <script src="js/attendance.js"></script>
 
 <script>
-    async function checkUserRole() {
-    const { data: { user }, error } = await supabaseClient.auth.getUser();
+window.loggedInEmployee = null;
+
+async function checkUserRole() {
+    const { data: { user }, error } =
+        await supabaseClient.auth.getUser();
 
     if (error || !user) {
         window.location.href = "index.html";
         return;
     }
 
-    const { data: employee, error: employeeError } = await supabaseClient
-        .from("employees")
-        const { data: employee, error: employeeError } = await supabaseClient     .from("employees")     .select("employee_id, full_name, role, status, leave_balance")     .eq("email", user.email)     .maybeSingle();
-        .eq("email", user.email)
-        .maybeSingle();
+    const { data: employee, error: employeeError } =
+        await supabaseClient
+            .from("employees")
+            .select("employee_id, full_name, role, status, leave_balance")
+            .eq("email", user.email)
+            .maybeSingle();
 
     if (employeeError || !employee || employee.status !== "Active") {
+        alert("Your active employee account could not be verified.");
         await supabaseClient.auth.signOut();
         window.location.href = "index.html";
         return;
     }
 
-    const adminSection = document.getElementById("adminEmployeeManagement");
+    // Store the identity retrieved for the authenticated account.
+    window.loggedInEmployee = employee;
 
-    if (adminSection) {
-        adminSection.style.display =
-            employee.role === "Admin" ? "block" : "none";
+    document.getElementById("welcomeMessage").textContent =
+        "Welcome, " + employee.full_name;
+
+    document.getElementById("attendanceEmployeeId").textContent =
+        employee.employee_id;
+
+    document.getElementById("myLeaveBalance").textContent =
+        "Remaining Casual Leaves: " + employee.leave_balance;
+
+    const adminSection =
+        document.getElementById("adminEmployeeManagement");
+
+    if (employee.role === "Admin") {
+        adminSection.classList.remove("hidden");
+    } else {
+        adminSection.classList.add("hidden");
     }
 }
 
-    async function logout() {
+async function logout() {
     const { error } = await supabaseClient.auth.signOut();
 
     if (error) {
@@ -325,48 +299,20 @@ th {
     window.location.href = "index.html";
 }
 
+// Keep this name for compatibility with any existing code that calls it.
 async function checkLeaveBalance() {
-    const employeeId =
-        document.getElementById("balanceEmployeeId").value.trim();
-    const result = document.getElementById("leaveBalanceResult");
+    const employee = window.loggedInEmployee;
 
-    if (!employeeId) {
-        result.textContent = "Please enter your Employee ID.";
+    if (!employee) {
+        alert("Your login identity has not been verified.");
         return;
     }
 
-    result.textContent = "Checking balance...";
-
-    try {
-        const { data, error } = await supabaseClient
-            .from("employees")
-            .select("leave_balance")
-            .eq("employee_id", employeeId)
-            .eq("status", "Active")
-            .maybeSingle();
-
-        if (error) {
-            console.error("Leave balance error:", error);
-            result.textContent =
-                "Could not load balance. Please try again.";
-            return;
-        }
-
-        if (!data) {
-            result.textContent =
-                "Active employee not found. Please check the Employee ID.";
-            return;
-        }
-
-        result.textContent =
-            "Remaining Casual Leaves: " + data.leave_balance;
-    } catch (err) {
-        console.error(err);
-        result.textContent =
-            "Something went wrong while checking the balance.";
-    }
+    document.getElementById("myLeaveBalance").textContent =
+        "Remaining Casual Leaves: " + employee.leave_balance;
 }
-    checkUserRole();
+
+checkUserRole();
 </script>
 
 </body>
