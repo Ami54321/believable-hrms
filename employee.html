@@ -179,13 +179,13 @@ th { background: #eef3fb; }
     </div>
 
     <!-- LEAVE BALANCE -->
-    <div class="card">
-        <h3>My Leave Balance</h3>
+    <div class="card employee-only">
+    <h3>My Leave Balance</h3>
         <p id="myLeaveBalance">Loading your leave balance...</p>
     </div>
 
     <!-- ATTENDANCE -->
-    <div class="card">
+    <div class="card employee-only">
         <h3>My Attendance</h3>
         <p>Employee ID: <strong id="attendanceEmployeeId">Loading...</strong></p>
         <button onclick="checkIn()">Check In</button>
@@ -194,7 +194,7 @@ th { background: #eef3fb; }
     </div>
 
     <!-- LATE REGULARIZATION -->
-    <div class="card">
+    <div class="card employee-only">
         <h3>Late Attendance Regularization</h3>
 
         <label for="regularizationDate">Attendance Date</label>
@@ -211,7 +211,7 @@ th { background: #eef3fb; }
     </div>
 
     <!-- APPLY FOR LEAVE -->
-    <div class="card">
+    <div class="card employee-only">
         <h3>Apply for Leave</h3>
 
         <label for="leaveType">Leave Type</label>
@@ -278,14 +278,22 @@ async function checkUserRole() {
     document.getElementById("myLeaveBalance").textContent =
         "Remaining Casual Leaves: " + employee.leave_balance;
 
-    const adminSection =
-        document.getElementById("adminEmployeeManagement");
+    const adminSection = document.getElementById("adminEmployeeManagement");
+const employeeSections = document.querySelectorAll(".employee-only");
 
-    if (employee.role === "Admin") {
-        adminSection.classList.remove("hidden");
-    } else {
-        adminSection.classList.add("hidden");
-    }
+if (employee.role === "Admin") {
+    adminSection.classList.remove("hidden");
+
+    employeeSections.forEach(section => {
+        section.classList.add("hidden");
+    });
+} else {
+    adminSection.classList.add("hidden");
+
+    employeeSections.forEach(section => {
+        section.classList.remove("hidden");
+    });
+}
 }
 
 async function logout() {
